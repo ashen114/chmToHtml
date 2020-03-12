@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js Buffer(缓冲区)</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js Buffer(缓冲区)</h1>
+	<hr>
+		  <p>JavaScript 语言自身只有字符串数据类型，没有二进制数据类型。</p>
+<p> 但在处理像TCP流或文件流时，必须使用到二进制数据。因此在 Node.js中，定义了一个 Buffer 类，该类用来创建一个专门存放二进制数据的缓存区。</p> <p> 在 Node.js 中，Buffer 类是随 Node 内核一起发布的核心库。Buffer 库为 Node.js 带来了一种存储原始数据的方法，可以让 Node.js 处理二进制数据，每当需要在 Node.js 中处理I/O操作中移动的数据时，就有可能使用 Buffer 库。原始数据存储在 Buffer 类的实例中。一个 Buffer 类似于一个整数数组，但它对应于 V8 堆内存之外的一块原始内存。</p> <hr>
+<h2>创建 Buffer 类</h2> <p>Node Buffer 类可以通过多种方式来创建。</p> <h3>方法 1</h3> <p>创建长度为 10 字节的 Buffer 实例：</p> <pre>
+var buf = new Buffer(10);
+</pre> <h3>方法 2</h3> <p>通过给定的数组创建 Buffer 实例：</p> <pre>
+var buf = new Buffer([10, 20, 30, 40, 50]);
+</pre> <h3>方法 3</h3> <p>通过一个字符串来创建 Buffer 实例：</p> <pre>
+var buf = new Buffer("www.shouce.ren", "utf-8");
+</pre> <p>utf-8 是默认的编码方式，此外它同样支持以下编码："ascii", "utf8", "utf16le", "ucs2", "base64" 和 "hex"。</p> <hr>
+<h2>写入缓冲区</h2> <h3>语法</h3> <p>写入 Node 缓冲区的语法如下所示：</p> <pre>
+buf.write(string[, offset][, length][, encoding])
+</pre> <h3>参数</h3> <p>参数描述如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>string</b> - 写入缓冲区的字符串。</p></li> <li class="list-group-item"><p><b>offset</b> - 缓冲区开始写入的索引值，默认为 0 。</p></li> <li class="list-group-item"><p><b>length</b> - 写入的字节数，默认为 buffer.length</p></li> <li class="list-group-item"><p><b>encoding</b> - 使用的编码。默认为 'utf8' 。</p></li> </ul>
+<h3>返回值</h3> <p>返回实际写入的大小。如果 buffer 空间不足， 则只会写入部分字符串。</p> <h3>实例</h3> <pre>
+buf = new Buffer(256);
+len = buf.write("www.shouce.ren");
+
+console.log("写入字节数 : "+  len);
+</pre> <p>执行以上代码，输出结果为：</p> <pre>
+$node main.js
+写入字节数 : 14
+</pre> <hr>
+<h2>从缓冲区读取数据</h2> <h3>语法</h3> <p>读取 Node 缓冲区数据的语法如下所示：</p> <pre>
+buf.toString([encoding][, start][, end])
+</pre> <h3>参数</h3> <p>参数描述如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>encoding</b> - 使用的编码。默认为 'utf8' 。</p></li> <li class="list-group-item"><p><b>start</b> - 指定开始读取的索引位置，默认为 0。</p></li> <li class="list-group-item"><p><b>end</b> - 结束位置，默认为缓冲区的末尾。</p></li> </ul>
+<h3>返回值</h3> <p>解码缓冲区数据并使用指定的编码返回字符串。</p> <h3>实例</h3> <pre>
+buf = new Buffer(26);
+for (var i = 0 ; i &lt; 26 ; i++) {
+  buf[i] = i + 97;
+}
+
+console.log( buf.toString('ascii'));       // 输出: abcdefghijklmnopqrstuvwxyz
+console.log( buf.toString('ascii',0,5));   // 输出: abcde
+console.log( buf.toString('utf8',0,5));    // 输出: abcde
+console.log( buf.toString(undefined,0,5)); // 使用 'utf8' 编码, 并输出: abcde
+</pre> <p>执行以上代码，输出结果为：</p> <pre>
+$ node main.js
+abcdefghijklmnopqrstuvwxyz
+abcde
+abcde
+abcde
+</pre> <hr>
+<h2>将 Buffer 转换为 JSON 对象</h2> <h3>语法</h3> <p>将 Node Buffer 转换为 JSON 对象的函数语法格式如下：</p> <pre>
+buf.toJSON()
+</pre> <h3>返回值</h3> <p>返回 JSON 对象。</p> <h3>实例</h3> <pre>
+var buf = new Buffer('www.shouce.ren');
+var json = buf.toJSON(buf);
+
+console.log(json);
+</pre> <p>执行以上代码，输出结果为：</p> <pre>
+[ 119, 119, 119, 46, 114, 117, 110, 111, 111, 98, 46, 99, 111, 109 ]
+</pre> <hr>
+<h2>缓冲区合并</h2> <h3>语法</h3> <p>Node 缓冲区合并的语法如下所示：</p> <pre>
+Buffer.concat(list[, totalLength])
+</pre> <h3>参数</h3> <p>参数描述如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>list</b> - 用于合并的 Buffer 对象数组列表。 </p></li> <li class="list-group-item"><p><b>totalLength</b> - 指定合并后Buffer对象的总长度。</p></li> </ul>
+<h3>返回值</h3> <p>返回一个多个成员合并的新 Buffer 对象。</p> <h3>实例</h3> <pre>
+var buffer1 = new Buffer('手册网 ');
+var buffer2 = new Buffer('www.shouce.ren');
+var buffer3 = Buffer.concat([buffer1,buffer2]);
+console.log("buffer3 内容: " + buffer3.toString());
+</pre> <p>执行以上代码，输出结果为：</p> <pre>buffer3 内容: 手册网 www.shouce.ren
+</pre> <hr>
+<h2>缓冲区比较</h2> <h3>语法</h3> <p>Node Buffer 比较的函数语法如下所示：</p> <pre>
+buf.compare(otherBuffer);
+</pre> <h3>参数</h3> <p>参数描述如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>otherBuffer</b> - 与 <b>buf</b> 对象比较的另外一个 Buffer 对象。 </p></li> </ul>
+<h3>返回值</h3> <p>返回一个数字，表示 <b>buf</b> 在 <b>otherBuffer</b> 之前，之后或相同。</p> <h3>实例</h3> <pre>
+var buffer1 = new Buffer('ABC');
+var buffer2 = new Buffer('ABCD');
+var result = buffer1.compare(buffer2);
+
+if(result &lt; 0) {
+   console.log(buffer1 + " 在 " + buffer2 + "之前");
+}else if(result == 0){
+   console.log(buffer1 + " 与 " + buffer2 + "相同");
+}else {
+   console.log(buffer1 + " 在 " + buffer2 + "之后");
+}
+</pre> <p>执行以上代码，输出结果为：</p> <pre>
+ABC在ABCD之前
+</pre> <hr>
+<h2>拷贝缓冲区</h2> <h3>语法</h3> <p>Node 缓冲区拷贝语法如下所示：</p> <pre>
+buf.copy(targetBuffer[, targetStart][, sourceStart][, sourceEnd])
+</pre> <h3>参数</h3> <p>参数描述如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>targetBuffer</b> - 要拷贝的 Buffer 对象。</p></li> <li class="list-group-item"><p><b>targetStart</b> - 数字, 可选, 默认: 0</p></li> <li class="list-group-item"><p><b>sourceStart</b> - 数字, 可选, 默认: 0</p></li> <li class="list-group-item"><p><b>sourceEnd</b> - 数字, 可选, 默认: buffer.length</p></li> </ul>
+<h3>返回值</h3> <p> 没有返回值。 </p> <h3>实例</h3> <pre>
+var buffer1 = new Buffer('ABC');
+// 拷贝一个缓冲区
+var buffer2 = new Buffer(3);
+buffer1.copy(buffer2);
+console.log("buffer2 content: " + buffer2.toString());
+</pre> <p>执行以上代码，输出结果为：</p> <pre>
+buffer2 content: ABC
+</pre> <hr>
+<h2>缓冲区裁剪</h2> <p>Node 缓冲区裁剪语法如下所示：</p> <pre>buf.slice([start][, end])</pre> <h3>参数</h3> <p>参数描述如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>start</b> - 数字, 可选, 默认: 0</p></li> <li class="list-group-item"><p><b>end</b> - 数字, 可选, 默认: buffer.length</p></li> </ul>
+<h3>返回值</h3> <p>返回一个新的缓冲区，它和旧缓冲区指向同一块内存，但是从索引 start 到 end 的位置剪切。</p> <h3>实例</h3> <pre>
+var buffer1 = new Buffer('runoob');
+// 剪切缓冲区
+var buffer2 = buffer1.slice(0,2);
+console.log("buffer2 content: " + buffer2.toString());
+&lt;p&gt;执行以上代码，输出结果为：&lt;/p&gt;
+&lt;pre&gt;
+buffer2 content: ru
+</pre> <hr>
+<h2>缓冲区长度</h2>
+<h3>语法</h3>
+<p>Node 缓冲区长度计算语法如下所示：</p> <pre>
+buf.length;
+</pre> <h3>返回值</h3> <p>返回 Buffer 对象所占据的内存长度。</p> <h3>实例</h3> <pre>
+var buffer = new Buffer('www.shouce.ren');
+//  缓冲区长度
+console.log("buffer length: " + buffer.length);
+</pre> <p>执行以上代码，输出结果为：</p> <pre>
+buffer length: 14
+</pre> <hr>
+<h2>方法参考手册</h2> <p>以下列出了 Node.js Buffer 模块常用的方法（注意有些方法在旧版本是没有的）：</p> <table class="reference"><tbody>
+<tr>
+<th>序号</th>
+<th>方法 &amp; 描述</th>
+</tr>
+<tr>
+<td>1</td>
+<td>
+<b>new Buffer(size)</b> <br>分配一个新的 size 大小单位为8位字节的 buffer。 注意, size 必须小于 kMaxLength，否则，将会抛出异常 RangeError。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<b>new Buffer(buffer)</b> <br>拷贝参数 buffer 的数据到 Buffer 实例。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>
+<b>new Buffer(str[, encoding])</b><br> 分配一个新的 buffer ，其中包含着传入的 str 字符串。 encoding 编码方式默认为 'utf8'。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>
+<b>buf.length</b><br> 返回这个 buffer 的 bytes 数。注意这未必是 buffer 里面内容的大小。length 是 buffer 对象所分配的内存数，它不会随着这个 buffer 对象内容的改变而改变。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>
+<b>buf.write(string[, offset][, length][, encoding])</b><br>根据参数 offset 偏移量和指定的 encoding 编码方式，将参数 string 数据写入buffer。 offset 偏移量默认值是 0, encoding 编码方式默认是 utf8。 length 长度是将要写入的字符串的 bytes 大小。 返回 number 类型，表示写入了多少 8 位字节流。如果 buffer 没有足够的空间来放整个 string，它将只会只写入部分字符串。 length 默认是 buffer.length - offset。 这个方法不会出现写入部分字符。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>
+<b>buf.writeUIntLE(value, offset, byteLength[, noAssert])</b><br>将value 写入到 buffer 里， 它由offset 和 byteLength 决定，支持 48 位计算，例如：<pre>
+var b = new Buffer(6);
+b.writeUIntBE(0x1234567890ab, 0, 6);
+// &lt;Buffer 12 34 56 78 90 ab&gt;
+</pre> noAssert 值为 true 时，不再验证 value 和 offset 的有效性。 默认是 false。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>
+<b>buf.writeUIntBE(value, offset, byteLength[, noAssert])</b><br>将value 写入到 buffer 里， 它由offset 和 byteLength 决定，支持 48 位计算。noAssert 值为 true 时，不再验证 value 和 offset 的有效性。 默认是 false。</td>
+</tr>
+<tr>
+<td>8</td>
+<td>
+<b>buf.writeIntLE(value, offset, byteLength[, noAssert])</b><br>将value 写入到 buffer 里， 它由offset 和 byteLength 决定，支持 48 位计算。noAssert 值为 true 时，不再验证 value 和 offset 的有效性。 默认是 false。</td>
+</tr>
+<tr>
+<td>9</td>
+<td>
+<b>buf.writeIntBE(value, offset, byteLength[, noAssert])</b><br>将value 写入到 buffer 里， 它由offset 和 byteLength 决定，支持 48 位计算。noAssert 值为 true 时，不再验证 value 和 offset 的有效性。 默认是 false。</td>
+</tr>
+<tr>
+<td>10</td>
+<td>
+<b>buf.readUIntLE(offset, byteLength[, noAssert])</b><br>支持读取 48 位以下的数字。noAssert 值为 true 时， offset 不再验证是否超过 buffer 的长度，默认为 false。</td>
+</tr>
+<tr>
+<td>11</td>
+<td>
+<b>buf.readUIntBE(offset, byteLength[, noAssert])</b><br>支持读取 48 位以下的数字。noAssert 值为 true 时， offset 不再验证是否超过 buffer 的长度，默认为 false。</td>
+</tr>
+<tr>
+<td>12</td>
+<td>
+<b>buf.readIntLE(offset, byteLength[, noAssert])</b><br>支持读取 48 位以下的数字。noAssert 值为 true 时， offset 不再验证是否超过 buffer 的长度，默认为 false。</td>
+</tr>
+<tr>
+<td>13</td>
+<td>
+<b>buf.readIntBE(offset, byteLength[, noAssert])</b><br>支持读取 48 位以下的数字。noAssert 值为 true 时， offset 不再验证是否超过 buffer 的长度，默认为 false。</td>
+</tr>
+<tr>
+<td>14</td>
+<td>
+<b>buf.toString([encoding][, start][, end])</b><br>根据 encoding 参数（默认是 'utf8'）返回一个解码过的 string 类型。还会根据传入的参数 start (默认是 0) 和 end (默认是 buffer.length)作为取值范围。</td>
+</tr>
+<tr>
+<td>15</td>
+<td>
+<b>buf.toJSON()</b><br>将 Buffer 实例转换为 JSON 对象。</td>
+</tr>
+<tr>
+<td>16</td>
+<td>
+<b>buf[index]</b><br>获取或设置指定的字节。返回值代表一个字节，所以返回值的合法范围是十六进制0x00到0xFF 或者十进制0至 255。</td>
+</tr>
+<tr>
+<td>17</td>
+<td>
+<b>buf.equals(otherBuffer)</b><br>比较两个缓冲区是否相等，如果是返回 true，否则返回 false。</td>
+</tr>
+<tr>
+<td>18</td>
+<td>
+<b>buf.compare(otherBuffer)</b><br>比较两个 Buffer 对象，返回一个数字，表示 buf 在 otherBuffer 之前，之后或相同。</td>
+</tr>
+<tr>
+<td>19</td>
+<td>
+<b>buf.copy(targetBuffer[, targetStart][, sourceStart][, sourceEnd])</b><br>buffer 拷贝，源和目标可以相同。 targetStart 目标开始偏移和 sourceStart 源开始偏移默认都是 0。 sourceEnd 源结束位置偏移默认是源的长度 buffer.length 。</td>
+</tr>
+<tr>
+<td>20</td>
+<td>
+<b>buf.slice([start][, end])</b><br>剪切 Buffer 对象，根据 start(默认是 0 ) 和 end (默认是 buffer.length ) 偏移和裁剪了索引。 负的索引是从 buffer 尾部开始计算的。</td>
+</tr>
+<tr>
+<td>21</td>
+<td>
+<b>buf.readUInt8(offset[, noAssert])</b><br>根据指定的偏移量，读取一个有符号 8 位整数。若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 如果这样 offset 可能会超出buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>22</td>
+<td>
+<b>buf.readUInt16LE(offset[, noAssert])</b><br>根据指定的偏移量，使用特殊的 endian 字节序格式读取一个有符号 16 位整数。若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出 buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>23</td>
+<td>
+<b>buf.readUInt16BE(offset[, noAssert])</b><br>根据指定的偏移量，使用特殊的 endian 字节序格式读取一个有符号 16 位整数。若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出 buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>24</td>
+<td>
+<b>buf.readUInt32LE(offset[, noAssert])</b><br>根据指定的偏移量，使用指定的 endian 字节序格式读取一个有符号 32 位整数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>25</td>
+<td>
+<b>buf.readUInt32BE(offset[, noAssert])</b><br>根据指定的偏移量，使用指定的 endian 字节序格式读取一个有符号 32 位整数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>26</td>
+<td>
+<b>buf.readInt8(offset[, noAssert])</b><br>根据指定的偏移量，读取一个 signed 8 位整数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出 buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>27</td>
+<td>
+<b>buf.readInt16LE(offset[, noAssert])</b><br>根据指定的偏移量，使用特殊的 endian 格式读取一个 signed 16 位整数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出 buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>28</td>
+<td>
+<b>buf.readInt16BE(offset[, noAssert])</b><br>根据指定的偏移量，使用特殊的 endian 格式读取一个 signed 16 位整数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出 buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>29</td>
+<td>
+<b>buf.readInt32LE(offset[, noAssert])</b><br>根据指定的偏移量，使用指定的 endian 字节序格式读取一个 signed 32 位整数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>30</td>
+<td>
+<b>buf.readInt32BE(offset[, noAssert])</b><br>根据指定的偏移量，使用指定的 endian 字节序格式读取一个 signed 32 位整数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>31</td>
+<td>
+<b>buf.readFloatLE(offset[, noAssert])</b><br>根据指定的偏移量，使用指定的 endian 字节序格式读取一个 32 位浮点数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出buffer的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>32</td>
+<td>
+<b>buf.readFloatBE(offset[, noAssert])</b><br>根据指定的偏移量，使用指定的 endian 字节序格式读取一个 32 位浮点数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出buffer的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>33</td>
+<td>
+<b>buf.readDoubleLE(offset[, noAssert])</b><br>根据指定的偏移量，使用指定的 endian字节序格式读取一个 64 位double。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>34</td>
+<td>
+<b>buf.readDoubleBE(offset[, noAssert])</b><br>根据指定的偏移量，使用指定的 endian字节序格式读取一个 64 位double。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 offset 可能会超出buffer 的末尾。默认是 false。</td>
+</tr>
+<tr>
+<td>35</td>
+<td>
+<b>buf.writeUInt8(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量将 value 写入 buffer。注意：value 必须是一个合法的有符号 8 位整数。 若参数 noAssert 为 true 将不会验证 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出 buffer 的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>36</td>
+<td>
+<b>buf.writeUInt16LE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer。注意：value 必须是一个合法的有符号 16 位整数。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出buffer的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>37</td>
+<td>
+<b>buf.writeUInt16BE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer。注意：value 必须是一个合法的有符号 16 位整数。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出buffer的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>38</td>
+<td>
+<b>buf.writeUInt32LE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入buffer。注意：value 必须是一个合法的有符号 32 位整数。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着value 可能过大，或者offset可能会超出buffer的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>39</td>
+<td>
+<b>buf.writeUInt32BE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入buffer。注意：value 必须是一个合法的有符号 32 位整数。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着value 可能过大，或者offset可能会超出buffer的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>40</td>
+<td>
+<b>buf.writeInt8(value, offset[, noAssert])</b><br offset value buffer signed noassert true false>
+</td>
+</tr>
+<tr>
+<td>41</td>
+<td>
+<b>buf.writeInt16LE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer。注意：value 必须是一个合法的 signed 16 位整数。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出 buffer 的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false 。</td>
+</tr>
+<tr>
+<td>42</td>
+<td>
+<b>buf.writeInt16BE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer。注意：value 必须是一个合法的 signed 16 位整数。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出 buffer 的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false 。</td>
+</tr>
+<tr>
+<td>43</td>
+<td>
+<b>buf.writeInt32LE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer。注意：value 必须是一个合法的 signed 32 位整数。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出 buffer 的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>44</td>
+<td>
+<b>buf.writeInt32BE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer。注意：value 必须是一个合法的 signed 32 位整数。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出 buffer 的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>45</td>
+<td>
+<b>buf.writeFloatLE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer 。注意：当 value 不是一个 32 位浮点数类型的值时，结果将是不确定的。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value可能过大，或者 offset 可能会超出 buffer 的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>46</td>
+<td>
+<b>buf.writeFloatBE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer 。注意：当 value 不是一个 32 位浮点数类型的值时，结果将是不确定的。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value可能过大，或者 offset 可能会超出 buffer 的末尾从而造成 value 被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>47</td>
+<td>
+<b>buf.writeDoubleLE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer。注意：value 必须是一个有效的 64 位double 类型的值。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出 buffer 的末尾从而造成value被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>48</td>
+<td>
+<b>buf.writeDoubleBE(value, offset[, noAssert])</b><br>根据传入的 offset 偏移量和指定的 endian 格式将 value 写入 buffer。注意：value 必须是一个有效的 64 位double 类型的值。 若参数 noAssert 为 true 将不会验证 value 和 offset 偏移量参数。 这意味着 value 可能过大，或者 offset 可能会超出 buffer 的末尾从而造成value被丢弃。 除非你对这个参数非常有把握，否则尽量不要使用。默认是 false。</td>
+</tr>
+<tr>
+<td>49</td>
+<td>
+<b>buf.fill(value[, offset][, end])</b><br>使用指定的 value 来填充这个 buffer。如果没有指定 offset (默认是 0) 并且 end (默认是 buffer.length) ，将会填充整个buffer。</td>
+</tr>
+</tbody></table>
+	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>

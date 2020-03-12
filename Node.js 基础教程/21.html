@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js DNS 模块</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js DNS 模块</h1>
+	<hr>
+		 <p></p> <p>Node.js <b>DNS</b> 模块用于解析域名。引入 DNS 模块语法格式如下： </p> <pre>
+var dns = require("dns")
+</pre> <hr>
+<h2>方法</h2> <table class="reference"><tbody>
+<tr>
+<th>序号</th>
+<th>方法 &amp; 描述</th>
+</tr>
+<tr>
+<td>1</td>
+<td>
+<b>dns.lookup(hostname[, options], callback)</b><br>将域名（比如 'shouce.ren'）解析为第一条找到的记录 A （IPV4）或 AAAA(IPV6)。参数 options可以是一个对象或整数。如果没有提供 options，IP v4 和 v6 地址都可以。如果 options 是整数，则必须是 4 或 6。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<b>dns.lookupService(address, port, callback)</b><br>使用 getnameinfo 解析传入的地址和端口为域名和服务。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>
+<b>dns.resolve(hostname[, rrtype], callback)</b><br>将一个域名（如 'shouce.ren'）解析为一个 rrtype 指定记录类型的数组。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>
+<b>dns.resolve4(hostname, callback)</b><br>和 dns.resolve() 类似, 仅能查询 IPv4 (A 记录）。 addresses IPv4 地址数组 (比如，['74.125.79.104', '74.125.79.105', '74.125.79.106']）。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>
+<b>dns.resolve6(hostname, callback)</b><br>和 dns.resolve4() 类似， 仅能查询 IPv6( AAAA 查询）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>
+<b>dns.resolveMx(hostname, callback)</b><br>和 dns.resolve() 类似, 仅能查询邮件交换(MX 记录)。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>
+<b>dns.resolveTxt(hostname, callback)</b><br>和 dns.resolve() 类似, 仅能进行文本查询 (TXT 记录）。 addresses 是 2-d 文本记录数组。(比如，[ ['v=spf1 ip4:0.0.0.0 ', '~all' ] ]）。 每个子数组包含一条记录的 TXT 块。根据使用情况可以连接在一起，也可单独使用。</td>
+</tr>
+<tr>
+<td>8</td>
+<td>
+<b>dns.resolveSrv(hostname, callback)</b><br>和 dns.resolve() 类似, 仅能进行服务记录查询 (SRV 记录）。 addresses 是 hostname可用的 SRV 记录数组。 SRV 记录属性有优先级（priority），权重（weight）, 端口（port）, 和名字（name） (比如，[{'priority': 10, 'weight': 5, 'port': 21223, 'name': 'service.example.com'}, ...]）。</td>
+</tr>
+<tr>
+<td>9</td>
+<td>
+<b>dns.resolveSoa(hostname, callback)</b><br>和 dns.resolve() 类似, 仅能查询权威记录(SOA 记录）。</td>
+</tr>
+<tr>
+<td>10</td>
+<td>
+<b>dns.resolveNs(hostname, callback)</b><br>和 dns.resolve() 类似, 仅能进行域名服务器记录查询(NS 记录）。 addresses 是域名服务器记录数组（hostname 可以使用） (比如, ['ns1.example.com', 'ns2.example.com']）。</td>
+</tr>
+<tr>
+<td>11</td>
+<td>
+<b>dns.resolveCname(hostname, callback)</b><br>和 dns.resolve() 类似, 仅能进行别名记录查询 (CNAME记录)。addresses 是对 hostname 可用的别名记录数组 (比如，, ['bar.example.com']）。</td>
+</tr>
+<tr>
+<td>12</td>
+<td>
+<b>dns.reverse(ip, callback)</b><br>反向解析 IP 地址，指向该 IP 地址的域名数组。</td>
+</tr>
+<tr>
+<td>13</td>
+<td>
+<b>dns.getServers()</b><br>返回一个用于当前解析的 IP 地址数组的字符串。</td>
+</tr>
+<tr>
+<td>14</td>
+<td>
+<b>dns.setServers(servers)</b><br>指定一组 IP 地址作为解析服务器。</td>
+</tr>
+</tbody></table>
+<h3>rrtypes</h3> <p>以下列出了 dns.resolve() 方法中有效的 rrtypes值:</p> <ul class="list-group">
+<li class="list-group-item">
+<code>'A'</code> IPV4 地址, 默认</li> <li class="list-group-item">
+<code>'AAAA'</code> IPV6 地址</li> <li class="list-group-item">
+<code>'MX'</code> 邮件交换记录</li> <li class="list-group-item">
+<code>'TXT'</code> text 记录</li> <li class="list-group-item">
+<code>'SRV'</code> SRV 记录</li> <li class="list-group-item">
+<code>'PTR'</code> 用来反向 IP 查找</li> <li class="list-group-item">
+<code>'NS'</code> 域名服务器记录</li> <li class="list-group-item">
+<code>'CNAME'</code> 别名记录</li> <li class="list-group-item">
+<code>'SOA'</code> 授权记录的初始值</li> </ul>
+<hr>
+<h2>错误码</h2> <p>每次 DNS 查询都可能返回以下错误码：</p> <ul class="list-group">
+<li class="list-group-item">
+<code>dns.NODATA</code>: 无数据响应。 </li> <li class="list-group-item">
+<code>dns.FORMERR</code>: 查询格式错误。 </li> <li class="list-group-item">
+<code>dns.SERVFAIL</code>: 常规失败。 </li> <li class="list-group-item">
+<code>dns.NOTFOUND</code>: 没有找到域名。 </li> <li class="list-group-item">
+<code>dns.NOTIMP</code>: 未实现请求的操作。 </li> <li class="list-group-item">
+<code>dns.REFUSED</code>: 拒绝查询。 </li> <li class="list-group-item">
+<code>dns.BADQUERY</code>: 查询格式错误。 </li> <li class="list-group-item">
+<code>dns.BADNAME</code>: 域名格式错误。 </li> <li class="list-group-item">
+<code>dns.BADFAMILY</code>: 地址协议不支持。 </li> <li class="list-group-item">
+<code>dns.BADRESP</code>: 回复格式错误。 </li> <li class="list-group-item">
+<code>dns.CONNREFUSED</code>: 无法连接到 DNS 服务器。 </li> <li class="list-group-item">
+<code>dns.TIMEOUT</code>: 连接 DNS 服务器超时。 </li> <li class="list-group-item">
+<code>dns.EOF</code>: 文件末端。 </li> <li class="list-group-item">
+<code>dns.FILE</code>: 读文件错误。 </li> <li class="list-group-item">
+<code>dns.NOMEM</code>: 内存溢出。 </li> <li class="list-group-item">
+<code>dns.DESTRUCTION</code>: 通道被摧毁。 </li> <li class="list-group-item">
+<code>dns.BADSTR</code>: 字符串格式错误。 </li> <li class="list-group-item">
+<code>dns.BADFLAGS</code>: 非法标识符。 </li> <li class="list-group-item">
+<code>dns.NONAME</code>: 所给主机不是数字。 </li> <li class="list-group-item">
+<code>dns.BADHINTS</code>: 非法HINTS标识符。 </li> <li class="list-group-item">
+<code>dns.NOTINITIALIZED</code>: c c-ares 库尚未初始化。 </li> <li class="list-group-item">
+<code>dns.LOADIPHLPAPI</code>: 加载 iphlpapi.dll 出错。 </li> <li class="list-group-item">
+<code>dns.ADDRGETNETWORKPARAMS</code>: 无法找到 GetNetworkParams 函数。 </li> <li class="list-group-item">
+<code>dns.CANCELLED</code>: 取消 DNS 查询。 </li> </ul>
+<h3>实例</h3> <p>创建 main.js 文件，代码如下所示：</p> <pre>
+var dns = require('dns');
+
+dns.lookup('www.github.com', function onLookup(err, address, family) {
+   console.log('ip 地址:', address);
+   dns.reverse(address, function (err, hostnames) {
+   if (err) {
+      console.log(err.stack);
+   }
+
+   console.log('反向解析 ' + address + ': ' + JSON.stringify(hostnames));
+});  
+});
+</pre> <p>执行以上代码，结果如下所示:</p> <pre>
+address: 192.30.252.130
+reverse for 192.30.252.130: ["github.com"]
+</pre>
+<p></p> 	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>

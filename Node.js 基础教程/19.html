@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js Path 模块</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js Path 模块</h1>
+	<hr>
+		 <p></p> <p> Node.js path 模块提供了一些用于处理文件路径的小工具，我们可以通过以下方式引入该模块： </p> <pre>
+var path = require("path")
+</pre> <h3>方法</h3> <table class="reference"><tbody>
+<tr>
+<th>序号</th>
+<th>方法 &amp; 描述</th>
+</tr>
+<tr>
+<td>1</td>
+<td>
+<b>path.normalize(p)</b><br>规范化路径，注意'..' 和 '.'。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<b>path.join([path1][, path2][, ...])</b><br>用于连接路径。该方法的主要用途在于，会正确使用当前系统的路径分隔符，Unix系统是"/"，Windows系统是"\"。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>
+<b>path.resolve([from ...], to)</b><br>将 <b>to</b> 参数解析为绝对路径。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>
+<b>path.isAbsolute(path)</b><br>判断参数 <b>path</b> 是否是绝对路径。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>
+<b>path.relative(from, to)</b><br>用于将相对路径转为绝对路径。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>
+<b>path.dirname(p)</b><br>返回路径中代表文件夹的部分，同 Unix 的dirname 命令类似。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>
+<b>path.basename(p[, ext])</b><br>返回路径中的最后一部分。同 Unix 命令 bashname 类似。</td>
+</tr>
+<tr>
+<td>8</td>
+<td>
+<b>path.extname(p)</b><br>返回路径中文件的后缀名，即路径中最后一个'.'之后的部分。如果一个路径中并不包含'.'或该路径只包含一个'.' 且这个'.'为路径的第一个字符，则此命令返回空字符串。</td>
+</tr>
+<tr>
+<td>9</td>
+<td>
+<b>path.parse(pathString)</b><br>返回路径字符串的对象。</td>
+</tr>
+<tr>
+<td>10</td>
+<td>
+<b>path.format(pathObject)</b><br>从对象中返回路径字符串，和 path.parse 相反。</td>
+</tr>
+</tbody></table>
+<h3>属性</h3> <table class="reference"><tbody>
+<tr>
+<th>序号</th>
+<th>属性 &amp; 描述</th>
+</tr>
+<tr>
+<td>1</td>
+<td>
+<b>path.sep</b><br>平台的文件路径分隔符，'\\' 或 '/'。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<b>path.delimiter</b><br>平台的分隔符, ; or ':'.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>
+<b>path.posix</b><br>提供上述 path 的方法，不过总是以 posix 兼容的方式交互。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>
+<b>path.win32</b><br>提供上述 path 的方法，不过总是以 win32 兼容的方式交互。</td>
+</tr>
+</tbody></table>
+<h3>实例</h3> <p>创建 main.js 文件，代码如下所示：</p> <pre>
+var path = require("path");
+
+// 格式化路径
+console.log('normalization : ' + path.normalize('/test/test1//2slashes/1slash/tab/..'));
+
+// 连接路径
+console.log('joint path : ' + path.join('/test', 'test1', '2slashes/1slash', 'tab', '..'));
+
+// 转换为绝对路径
+console.log('resolve : ' + path.resolve('main.js'));
+
+// 路径中文件的后缀名
+console.log('ext name : ' + path.extname('main.js'));
+</pre> <p>代码执行结果如下：</p> <pre>
+$ node main.js 
+normalization : /test/test1/2slashes/1slash
+joint path : /test/test1/2slashes/1slash
+resolve : /web/com/1427176256_27423/main.js
+ext name : .js
+</pre>
+<p></p> 	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>

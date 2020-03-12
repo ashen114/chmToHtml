@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js 回调函数</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js 回调函数</h1>
+	<hr>
+		  <p>Node.js 异步编程的直接体现就是回调。</p> <p>异步编程依托于回调来实现，但不能说使用了回调后程序就异步化了。</p> <p>回调函数在完成任务后就会被调用，Node 使用了大量的回调函数，Node 所有 API 都支持回调函数。</p> <p> 例如，我们可以一边读取文件，一边执行其他命令，在文件读取完成后，我们将文件内容作为回调函数的参数返回。这样在执行代码时就没有阻塞或等待文件 I/O 操作。这就大大提高了 Node.js 的性能，可以处理大量的并发请求。</p> <hr>
+<h2>阻塞代码实例</h2> <p>创建一个文件 input.txt ，内容如下：</p> <pre>
+手册网官网地址：www.shouce.ren</pre> <p>创建 main.js 文件, 代码如下：</p> <pre>
+var fs = require("fs");
+
+var data = fs.readFileSync('input.txt');
+
+console.log(data.toString());
+console.log("程序执行结束!");
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node main.js
+手册网官网地址：www.shouce.ren
+
+程序执行结束!
+</pre> <hr>
+<h2>非阻塞代码实例</h2> <p>创建一个文件 input.txt ，内容如下：</p> <pre>
+手册网官网地址：www.shouce.ren</pre> <p>创建 main.js 文件, 代码如下：</p> <pre>
+var fs = require("fs");
+
+fs.readFile('input.txt', function (err, data) {
+    if (err) return console.error(err);
+    console.log(data.toString());
+});
+
+console.log("程序执行结束!");
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node main.js
+程序执行结束!
+手册网官网地址：www.shouce.ren
+
+</pre> <p>以上两个实例我们了解了阻塞与非阻塞调用的不同。第一个实例在文件读取完后才执行完程序。 第二个实例我们呢不需要等待文件读取完，这样就可以在读取文件时同时执行接下来的代码，大大提高了程序的性能。</p> <p>因此，阻塞按是按顺序执行的，而非阻塞是不需要按顺序的，所以如果需要处理回调函数的参数，我们就需要写在回调函数内。</p> 	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>

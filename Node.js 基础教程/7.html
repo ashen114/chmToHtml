@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js EventEmitter</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js EventEmitter</h1>
+	<hr>
+		  <p>Node.js 所有的异步 I/O 操作在完成时都会发送一个事件到事件队列。</p>
+<p> Node.js里面的许多对象都会分发事件：一个net.Server对象会在每次有新连接时分发一个事件， 一个fs.readStream对象会在文件被打开的时候发出一个事件。 所有这些产生事件的对象都是 events.EventEmitter 的实例。 </p> <hr>
+<h2>EventEmitter 类</h2> <p> events 模块只提供了一个对象： events.EventEmitter。EventEmitter 的核心就是事件触发与事件监听器功能的封装。</p> <p>你可以通过require("events");来访问该模块。</p> <pre>
+// 引入 events 模块
+var events = require('events');
+// 创建 eventEmitter 对象
+var eventEmitter = new events.EventEmitter();
+</pre> <p>EventEmitter 对象如果在实例化时发生错误，会触发 'error' 事件。当添加新的监听器时，'newListener' 事件会触发，当监听器被移除时，'removeListener' 事件被触发。</p> <p>下面我们用一个简单的例子说明 EventEmitter 的用法：</p> <pre>
+//event.js 文件
+var EventEmitter = require('events').EventEmitter; 
+var event = new EventEmitter(); 
+event.on('some_event', function() { 
+	console.log('some_event 事件触发'); 
+}); 
+setTimeout(function() { 
+	event.emit('some_event'); 
+}, 1000); 
+</pre> <p>执行结果如下：</p> <p>运行这段代码，1 秒后控制台输出了 <b>'some_event 事件触发'</b>。其原理是 event 对象注册了事件 some_event 的一个监听器，然后我们通过 setTimeout 在 1000 毫秒以后向 event 对象发送事件 some_event，此时会调用some_event 的监听器。 </p>
+<pre>
+$ node event.js 
+some_event 事件触发
+</pre> <p> EventEmitter 的每个事件由一个事件名和若干个参数组成，事件名是一个字符串，通常表达一定的语义。对于每个事件，EventEmitter 支持 若干个事件监听器。</p>
+<p> 当事件触发时，注册到这个事件的事件监听器被依次调用，事件参数作为回调函数参数传递。</p> <p>让我们以下面的例子解释这个过程：</p> <pre>
+//event.js 文件
+var events = require('events'); 
+var emitter = new events.EventEmitter(); 
+emitter.on('someEvent', function(arg1, arg2) { 
+	console.log('listener1', arg1, arg2); 
+}); 
+emitter.on('someEvent', function(arg1, arg2) { 
+	console.log('listener2', arg1, arg2); 
+}); 
+emitter.emit('someEvent', 'arg1 参数', 'arg2 参数'); 
+</pre> <p>执行以上代码，运行的结果如下：/p&gt; </p>
+<pre>
+$ node event.js 
+listener1 arg1 参数 arg2 参数
+listener2 arg1 参数 arg2 参数
+</pre> <p> 以上例子中，emitter 为事件 someEvent 注册了两个事件监听器，然后触发了 someEvent 事件。</p>
+<p>运行结果中可以看到两个事件监听器回调函数被先后调用。 这就是EventEmitter最简单的用法。 </p> <p>EventEmitter 提供了多个属性，如 <b>on</b> 和 <b>emit</b>。<b>on</b> 函数用于绑定事件函数，<b>emit</b> 属性用于触发一个事件。接下来我们来具体看下 EventEmitter 的属性介绍。</p> <h3>方法</h3> <table class="reference"><tbody>
+<tr>
+<th>序号</th>
+<th>方法 &amp; 描述</th>
+</tr>
+<tr>
+<td>1</td>
+<td>
+<b>addListener(event, listener)</b><br> 为指定事件添加一个监听器到监听器数组的尾部。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<b>on(event, listener)</b>为指定事件注册一个监听器，接受一个字符串 event 和一个回调函数。 <pre>
+server.on('connection', function (stream) {
+  console.log('someone connected!');
+});
+</pre> </td>
+</tr>
+<tr>
+<td>3</td>
+<td>
+<b>once(event, listener)</b>为指定事件注册一个单次监听器，即 监听器最多只会触发一次，触发后立刻解除该监听器。 <pre>
+server.once('connection', function (stream) {
+  console.log('Ah, we have our first user!');
+});
+</pre> </td>
+</tr>
+<tr>
+<td>4</td>
+<td>
+<b>removeListener(event, listener)</b>移除指定事件的某个监听器，监听器 必须是该事件已经注册过的监听器。 <pre>
+var callback = function(stream) {
+  console.log('someone connected!');
+};
+server.on('connection', callback);
+// ...
+server.removeListener('connection', callback);
+</pre> </td>
+</tr>
+<tr>
+<td>5</td>
+<td>
+<b>removeAllListeners([event])</b><br>移除所有事件的所有监听器， 如果指定事件，则移除指定事件的所有监听器。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>
+<b>setMaxListeners(n)</b><br>默认情况下， EventEmitters 如果你添加的监听器超过 10 个就会输出警告信息。 setMaxListeners 函数用于提高监听器的默认限制的数量。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>
+<b>listeners(event)</b><br>返回指定事件的监听器数组。</td>
+</tr>
+<tr>
+<td>8</td>
+<td>
+<b>emit(event, [arg1], [arg2], [...])</b><br>按参数的顺序执行每个监听器，如果事件有注册监听返回 true，否则返回 false。</td>
+</tr>
+</tbody></table>
+<h3>类方法</h3> <table class="reference"><tbody>
+<tr>
+<th>序号</th>
+<th>方法 &amp; 描述</th>
+</tr>
+<tr>
+<td>1</td>
+<td>
+<b>listenerCount(emitter, event)</b><br>返回指定事件的监听器数量。</td>
+</tr>
+</tbody></table>
+<h3>事件</h3> <table class="reference"><tbody>
+<tr>
+<th>序号</th>
+<th>事件 &amp; 描述</th>
+</tr>
+<tr>
+<td>1</td>
+<td>
+<b>newListener</b><br><ul class="list-group">
+<li class="list-group-item"><p><b>event</b> - 字符串，事件名称</p></li> <li class="list-group-item"><p><b>listener</b> - 处理事件函数</p></li> </ul>
+<p>该事件在添加新监听器时被触发。</p>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<b>removeListener</b><br><ul class="list-group">
+<li class="list-group-item"><p><b>event</b> - 字符串，事件名称</p></li> <li class="list-group-item"><p><b>listener</b> - 处理事件函数</p></li> </ul>
+<p>从指定监听器数组中删除一个监听器。需要注意的是，此操作将会改变处于被删监听器之后的那些监听器的索引。</p>
+</td>
+</tr>
+</tbody></table>
+<h3>实例</h3> <p>以下实例通过 connection（连接）事件演示了 EventEmitter 类的应用。</p> <p>创建 main.js 文件，代码如下：</p> <pre>
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
+// 监听器 #1
+var listner1 = function listner1() {
+   console.log('监听器 listner1 执行。');
+}
+
+// 监听器 #2
+var listner2 = function listner2() {
+  console.log('监听器 listner2 执行。');
+}
+
+// 绑定 connection 事件，处理函数为 listner1 
+eventEmitter.addListener('connection', listner1);
+
+// 绑定 connection 事件，处理函数为 listner2
+eventEmitter.on('connection', listner2);
+
+var eventListeners = require('events').EventEmitter.listenerCount(eventEmitter,'connection');
+console.log(eventListeners + " 监听器监听连接事件。");
+
+// 处理 connection 事件 
+eventEmitter.emit('connection');
+
+// 移除监绑定的 listner1 函数
+eventEmitter.removeListener('connection', listner1);
+console.log("listner1 不再受监听。");
+
+// 触发连接事件
+eventEmitter.emit('connection');
+
+eventListeners = require('events').EventEmitter.listenerCount(eventEmitter,'connection');
+console.log(eventListeners + " 监听器监听连接事件。");
+
+console.log("程序执行完毕。");
+</pre> <p>以上代码，执行结果如下所示：</p> <pre>
+$ node main.js
+2 监听器监听连接事件。
+监听器 listner1 执行。
+监听器 listner2 执行。
+listner1 不再受监听。
+监听器 listner2 执行。
+1 监听器监听连接事件。
+程序执行完毕。
+</pre> <hr>
+<h2>error 事件</h2> <p> EventEmitter 定义了一个特殊的事件 error，它包含了错误的语义，我们在遇到 异常的时候通常会触发 error 事件。</p> <p>当 error 被触发时，EventEmitter 规定如果没有响 应的监听器，Node.js 会把它当作异常，退出程序并输出错误信息。</p> <p>我们一般要为会触发 error 事件的对象设置监听器，避免遇到错误后整个程序崩溃。例如：</p> <pre>
+var events = require('events'); 
+var emitter = newevents.EventEmitter(); 
+emitter.emit('error'); 
+</pre> <p> 运行时会显示以下错误：</p> <pre>
+node.js:201 
+throw e; // process.nextTick error, or 'error' event on first tick 
+^ 
+Error: Uncaught, unspecified 'error' event. 
+at EventEmitter.emit (events.js:50:15) 
+at Object.&lt;anonymous&gt; (/home/byvoid/error.js:5:9) 
+at Module._compile (module.js:441:26) 
+at Object..js (module.js:459:10) 
+at Module.load (module.js:348:31) 
+at Function._load (module.js:308:12) 
+at Array.0 (module.js:479:10) 
+at EventEmitter._tickCallback (node.js:192:40) 
+</pre> <hr>
+<h2>继承 EventEmitter</h2> <p> 大多数时候我们不会直接使用 EventEmitter，而是在对象中继承它。包括 fs、net、 http 在内的，只要是支持事件响应的核心模块都是 EventEmitter 的子类。</p> <p> 为什么要这样做呢？原因有两点：</p> <p>首先，具有某个实体功能的对象实现事件符合语义， 事件的监听和发射应该是一个对象的方法。</p> <p>其次 JavaScript 的对象机制是基于原型的，支持 部分多重继承，继承 EventEmitter 不会打乱对象原有的继承关系。</p> 	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js 文件系统</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js 文件系统</h1>
+	<hr>
+		  <p> Node.js 提供一组类似 UNIX（POSIX）标准的文件操作API。 Node 导入文件系统模块(fs)语法如下所示：</p> <pre>
+var fs = require("fs")
+</pre> <hr>
+<h2>异步和同步</h2>
+<p> Node.js 文件系统（fs 模块）模块中的方法均有异步和同步版本，例如读取文件内容的函数有异步的 fs.readFile() 和同步的 fs.readFileSync()。</p> <p>异步的方法函数最后一个参数为回调函数，回调函数的第一个参数包含了错误信息(error)。</p> <p>建议大家是用异步方法，比起同步，异步方法性能更高，速度更快，而且没有阻塞。</p> <h3> 实例</h3> <p>创建 input.txt 文件，内容如下：</p> <pre>
+手册网官网地址：www.shouce.ren
+文件读取实例</pre> <p>创建 file.js 文件, 代码如下：</p> <pre>
+var fs = require("fs");
+
+// 异步读取
+fs.readFile('input.txt', function (err, data) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log("异步读取: " + data.toString());
+});
+
+// 同步读取
+var data = fs.readFileSync('input.txt');
+console.log("同步读取: " + data.toString());
+
+console.log("程序执行完毕。");
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+同步读取: 手册网官网地址：www.shouce.ren
+文件读取实例
+
+程序执行完毕。
+异步读取: 手册网官网地址：www.shouce.ren
+文件读取实例
+</pre> <p>接下来，让我们来具体了解下 Node.js 文件系统的方法。</p> <hr>
+<h2>打开文件</h2> <h3>语法</h3> <p>以下为在异步模式下打开文件的语法格式：</p> <pre>
+fs.open(path, flags[, mode], callback)
+</pre> <h3>参数</h3> <p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>path</b> - 文件的路径。</p></li> <li class="list-group-item"><p><b>flags</b> - 文件打开的行为。具体值详见下文。</p></li> <li class="list-group-item"><p><b>mode</b> - 设置文件模式(权限)，文件创建默认权限为 0666(可读，可写)。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，带有两个参数如：callback(err, fd)。</p></li> </ul>
+<p>flags 参数可以是以下值：</p> <table class="reference"><tbody>
+<tr>
+<th>Flag</th>
+<th>描述</th>
+</tr>
+<tr>
+<td>r</td>
+<td>以读取模式打开文件。如果文件不存在抛出异常。</td>
+</tr>
+<tr>
+<td>r+</td>
+<td> 以读写模式打开文件。如果文件不存在抛出异常。</td>
+</tr>
+<tr>
+<td>rs</td>
+<td>以同步的方式读取文件。</td>
+</tr>
+<tr>
+<td>rs+</td>
+<td>以同步的方式读取和写入文件。</td>
+</tr>
+<tr>
+<td>w</td>
+<td>以写入模式打开文件，如果文件不存在则创建。</td>
+</tr>
+<tr>
+<td>wx</td>
+<td>类似 'w'，但是如果文件路径不存在，则文件写入失败。</td>
+</tr>
+<tr>
+<td>w+</td>
+<td>以读写模式打开文件，如果文件不存在则创建。</td>
+</tr>
+<tr>
+<td>wx+</td>
+<td>类似 'w+'， 但是如果文件路径不存在，则文件读写失败。</td>
+</tr>
+<tr>
+<td>a</td>
+<td>以追加模式打开文件，如果文件不存在则创建。</td>
+</tr>
+<tr>
+<td>ax</td>
+<td>类似 'a'， 但是如果文件路径不存在，则文件追加失败。</td>
+</tr>
+<tr>
+<td>a+</td>
+<td>以读取追加模式打开文件，如果文件不存在则创建。</td>
+</tr>
+<tr>
+<td>ax+</td>
+<td>类似 'a+'， 但是如果文件路径不存在，则文件读取追加失败。</td>
+</tr>
+</tbody></table>
+<h3>实例</h3> <p>接下来我们创建 file.js 文件，并打开 input.txt 文件进行读写，代码如下所示：</p> <pre>
+var fs = require("fs");
+
+// 异步打开文件
+console.log("准备打开文件！");
+fs.open('input.txt', 'r+', function(err, fd) {
+   if (err) {
+       return console.error(err);
+   }
+  console.log("文件打开成功！");     
+});
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+准备打开文件！
+文件打开成功！
+</pre> <hr>
+<h2>获取文件信息</h2> <h3>语法</h3> <p>以下为通过异步模式获取文件信息的语法格式：</p> <pre>
+fs.stat(path, callback)
+</pre> <h3>参数</h3> <p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>path</b> - 文件路径。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，带有两个参数如：(err, stats), <b>stats</b> 是 fs.Stats 对象。</p></li> </ul>
+<p>fs.stat(path)执行后，会将stats类的实例返回给其回调函数。可以通过stats类中的提供方法判断文件的相关属性。例如判断是否为文件：</p> <pre>
+var fs = require('fs');
+
+fs.stat('/Users/liuht/code/itbilu/demo/fs.js', function (err, stats) {
+    console.log(stats.isFile()); 		//true
+})
+</pre> <p>stats类中的方法有：</p> <table class="reference"><tbody>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+<tr>
+<td>stats.isFile()</td>
+<td>如果是文件返回 true，否则返回 false。</td>
+</tr>
+<tr>
+<td>stats.isDirectory()</td>
+<td>如果是目录返回 true，否则返回 false。</td>
+</tr>
+<tr>
+<td>stats.isBlockDevice()</td>
+<td>如果是块设备返回 true，否则返回 false。</td>
+</tr>
+<tr>
+<td>stats.isCharacterDevice()</td>
+<td>如果是字符设备返回 true，否则返回 false。</td>
+</tr>
+<tr>
+<td>stats.isSymbolicLink()</td>
+<td>如果是软链接返回 true，否则返回 false。</td>
+</tr>
+<tr>
+<td>stats.isFIFO()</td>
+<td>如果是FIFO，返回true，否则返回 false。FIFO是UNIX中的一种特殊类型的命令管道。</td>
+</tr>
+<tr>
+<td>stats.isSocket()</td>
+<td>如果是 Socket 返回 true，否则返回 false。</td>
+</tr>
+</tbody></table>
+<h3>实例</h3> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+
+console.log("准备打开文件！");
+fs.stat('input.txt', function (err, stats) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log(stats);
+   console.log("读取文件信息成功！");
+   
+   // 检测文件类型
+   console.log("是否为文件(isFile) ? " + stats.isFile());
+   console.log("是否为目录(isDirectory) ? " + stats.isDirectory());    
+});
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+准备打开文件！
+{ dev: 16777220,
+  mode: 33188,
+  nlink: 1,
+  uid: 501,
+  gid: 20,
+  rdev: 0,
+  blksize: 4096,
+  ino: 40333161,
+  size: 61,
+  blocks: 8,
+  atime: Mon Sep 07 2015 17:43:55 GMT+0800 (CST),
+  mtime: Mon Sep 07 2015 17:22:35 GMT+0800 (CST),
+  ctime: Mon Sep 07 2015 17:22:35 GMT+0800 (CST) }
+读取文件信息成功！
+是否为文件(isFile) ? true
+是否为目录(isDirectory) ? false
+</pre> <hr>
+<h2>写入文件</h2> <h3>语法</h3> <p>以下为异步模式下写入文件的语法格式：</p> <pre>
+fs.writeFile(filename, data[, options], callback)
+</pre> <p> 如果文件存在，该方法写入的内容会覆盖旧的文件内容。</p> <h3>参数</h3> <p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>path</b> - 文件路径。</p></li> <li class="list-group-item"><p><b>data</b> - 要写入文件的数据，可以是 String(字符串) 或 Buffer(流) 对象。</p></li> <li class="list-group-item"><p><b>options</b> - 该参数是一个对象，包含 {encoding, mode, flag}。默认编码为 utf8, 模式为 0666 ， flag 为 'w'</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，回调函数只包含错误信息参数(err)，在写入失败时返回。</p></li> </ul>
+<h3>实例</h3> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+
+console.log("准备写入文件");
+fs.writeFile('input.txt', '我是通过写入的文件内容！',  function(err) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log("数据写入成功！");
+   console.log("--------我是分割线-------------")
+   console.log("读取写入的数据！");
+   fs.readFile('input.txt', function (err, data) {
+      if (err) {
+         return console.error(err);
+      }
+      console.log("异步读取文件数据: " + data.toString());
+   });
+});
+</pre>
+<p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+准备写入文件
+数据写入成功！
+--------我是分割线-------------
+读取写入的数据！
+异步读取文件数据: 我是通过写入的文件内容
+</pre> <hr>
+<h2>读取文件</h2> <h3>语法</h3> <p>以下为异步模式下读取文件的语法格式：</p> <pre>
+fs.read(fd, buffer, offset, length, position, callback)
+</pre> <p> 该方法使用了文件描述符来读取文件。</p> <h3>参数</h3>
+<p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>fd</b> - 通过 fs.open() 方法返回的文件描述符。</p></li> <li class="list-group-item"><p><b>buffer</b> - 数据写入的缓冲区。</p></li> <li class="list-group-item"><p><b>offset</b> - 缓冲区写入的写入偏移量。</p></li> <li class="list-group-item"><p><b>length</b> - 要从文件中读取的字节数。</p></li> <li class="list-group-item"><p><b>position</b> - 文件读取的起始位置，如果 position 的值为 null，则会从当前文件指针的位置读取。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，有三个参数err, bytesRead, buffer，err 为错误信息， bytesRead 表示读取的字节数，buffer 为缓冲区对象。</p></li> </ul>
+<h3>实例</h3> <p>input.txt 文件内容为：</p> <pre>
+手册网官网地址：www.shouce.ren
+</pre> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+var buf = new Buffer(1024);
+
+console.log("准备打开已存在的文件！");
+fs.open('input.txt', 'r+', function(err, fd) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log("文件打开成功！");
+   console.log("准备读取文件：");
+   fs.read(fd, buf, 0, buf.length, 0, function(err, bytes){
+      if (err){
+         console.log(err);
+      }
+      console.log(bytes + "  字节被读取");
+      
+      // 仅输出读取的字节
+      if(bytes &gt; 0){
+         console.log(buf.slice(0, bytes).toString());
+      }
+   });
+});
+</pre>
+<p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+准备打开已存在的文件！
+文件打开成功！
+准备读取文件：
+42  字节被读取
+手册网官网地址：www.shouce.ren
+</pre> <hr>
+<h2>关闭文件</h2> <h3>语法</h3> <p>以下为异步模式下关闭文件的语法格式：</p> <pre>
+fs.close(fd, callback)
+</pre> <p> 该方法使用了文件描述符来读取文件。</p> <h3>参数</h3>
+<p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>fd</b> - 通过 fs.open() 方法返回的文件描述符。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，没有参数。</p></li> </ul>
+<h3>实例</h3> <p>input.txt 文件内容为：</p> <pre>
+手册网官网地址：www.shouce.ren
+</pre> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+var buf = new Buffer(1024);
+
+console.log("准备打开文件！");
+fs.open('input.txt', 'r+', function(err, fd) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log("文件打开成功！");
+   console.log("准备读取文件！");
+   fs.read(fd, buf, 0, buf.length, 0, function(err, bytes){
+      if (err){
+         console.log(err);
+      }
+
+      // 仅输出读取的字节
+      if(bytes &gt; 0){
+         console.log(buf.slice(0, bytes).toString());
+      }
+
+      // 关闭文件
+      fs.close(fd, function(err){
+         if (err){
+            console.log(err);
+         } 
+         console.log("文件关闭成功");
+      });
+   });
+});
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+准备打开文件！
+文件打开成功！
+准备读取文件！
+手册网官网地址：www.shouce.ren
+文件关闭成功
+</pre> <hr>
+<h2>截取文件</h2> <h3>语法</h3> <p>以下为异步模式下截取文件的语法格式：</p> <pre>
+fs.ftruncate(fd, len, callback)
+</pre> <p> 该方法使用了文件描述符来读取文件。</p> <h3>参数</h3>
+<p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>fd</b> - 通过 fs.open() 方法返回的文件描述符。</p></li> <li class="list-group-item"><p><b>len</b> - 文件内容截取的长度。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，没有参数。</p></li> </ul>
+<h3>实例</h3> <p>input.txt 文件内容为：</p> <pre>
+site:www.shouce.ren
+</pre> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+var buf = new Buffer(1024);
+
+console.log("准备打开文件！");
+fs.open('input.txt', 'r+', function(err, fd) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log("文件打开成功！");
+   console.log("截取10字节后的文件内容。");
+   
+   // 截取文件
+   fs.ftruncate(fd, 10, function(err){
+      if (err){
+         console.log(err);
+      } 
+      console.log("文件截取成功。");
+      console.log("读取相同的文件"); 
+      fs.read(fd, buf, 0, buf.length, 0, function(err, bytes){
+         if (err){
+            console.log(err);
+         }
+
+         // 仅输出读取的字节
+         if(bytes &gt; 0){
+            console.log(buf.slice(0, bytes).toString());
+         }
+
+         // 关闭文件
+         fs.close(fd, function(err){
+            if (err){
+               console.log(err);
+            } 
+            console.log("文件关闭成功！");
+         });
+      });
+   });
+});
+</pre>
+<p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+准备打开文件！
+文件打开成功！
+截取10字节后的文件内容。
+文件截取成功。
+读取相同的文件
+site:www.r
+文件关闭成功
+</pre> <hr>
+<h2>删除文件</h2> <h3>语法</h3> <p>以下为删除文件的语法格式：</p> <pre>
+fs.unlink(path, callback)
+</pre> <h3>参数</h3>
+<p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>path</b> - 文件路径。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，没有参数。</p></li> </ul>
+<h3>实例</h3> <p>input.txt 文件内容为：</p> <pre>
+site:www.shouce.ren
+</pre> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+
+console.log("准备删除文件！");
+fs.unlink('input.txt', function(err) {
+   if (err) {
+       return console.error(err);
+   }
+   console.log("文件删除成功！");
+});
+</pre>
+<p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+准备删除文件！
+文件删除成功！
+</pre> <p>再去查看 input.txt 文件，发现已经不存在了。</p> <hr>
+<h2>创建目录</h2> <h3>语法</h3> <p>以下为创建目录的语法格式：</p> <pre>
+fs.mkdir(path[, mode], callback)
+</pre> <h3>参数</h3>
+<p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>path</b> - 文件路径。</p></li> <li class="list-group-item"><p><b>mode</b> - 设置目录权限，默认为 0777。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，没有参数。</p></li> </ul>
+<h3>实例</h3> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+
+console.log(创建目录 /tmp/test");
+fs.mkdir('/tmp/test',function(err){
+   if (err) {
+       return console.error(err);
+   }
+   console.log("目录创建成功。");
+});
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+创建目录 /tmp/test
+目录创建成功。
+</pre> <hr>
+<h2>读取目录</h2> <h3>语法</h3> <p>以下为读取目录的语法格式：</p> <pre>
+fs.readdir(path, callback)
+</pre> <h3>参数</h3>
+<p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>path</b> - 文件路径。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，回调函数带有两个参数err, files，err 为错误信息，files 为 目录下的文件数组列表。</p></li> </ul>
+<h3>实例</h3> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+
+console.log("查看 /tmp 目录");
+fs.readdir("/tmp/",function(err, files){
+   if (err) {
+       return console.error(err);
+   }
+   files.forEach( function (file){
+       console.log( file );
+   });
+});
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+查看 /tmp 目录
+input.out
+output.out
+test
+test.txt
+</pre> <hr>
+<h2>删除目录</h2> <h3>语法</h3> <p>以下为删除目录的语法格式：</p> <pre>
+fs.rmdir(path, callback)
+</pre> <h3>参数</h3>
+<p>参数使用说明如下：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>path</b> - 文件路径。</p></li> <li class="list-group-item"><p><b>callback</b> - 回调函数，没有参数。</p></li> </ul>
+<h3>实例</h3> <p>接下来我们创建 file.js 文件，代码如下所示：</p> <pre>
+var fs = require("fs");
+
+console.log("准备删除目录 /tmp/test");
+fs.rmdir("/tmp/test",function(err){
+   if (err) {
+       return console.error(err);
+   }
+   console.log("读取 /tmp 目录");
+   fs.readdir("/tmp/",function(err, files){
+      if (err) {
+          return console.error(err);
+      }
+      files.forEach( function (file){
+          console.log( file );
+      });
+   });
+});
+</pre> <p>以上代码执行结果如下：</p> <pre>
+$ node file.js 
+准备删除目录 /tmp/test
+input.out
+output.out
+test
+test.txt
+读取 /tmp 目录
+……
+</pre> <hr>
+<h2>文件模块方法参考手册</h2> <p>以下为 Node.js 文件模块相同的方法列表：</p> <table class="reference"><tbody>
+<tr>
+<th>序号</th>
+<th>方法 &amp; 描述</th>
+</tr>
+<tr>
+<td>1</td>
+<td>
+<b>fs.rename(oldPath, newPath, callback)</b><br>异步 rename().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<b>fs.ftruncate(fd, len, callback)</b><br>异步 ftruncate().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>
+<b>fs.ftruncateSync(fd, len)</b><br>同步 ftruncate()</td>
+</tr>
+<tr>
+<td>4</td>
+<td>
+<b>fs.truncate(path, len, callback)</b><br>异步 truncate().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>
+<b>fs.truncateSync(path, len)</b><br>同步 truncate()</td>
+</tr>
+<tr>
+<td>6</td>
+<td>
+<b>fs.chown(path, uid, gid, callback)</b><br>异步 chown().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>
+<b>fs.chownSync(path, uid, gid)</b><br>同步 chown()</td>
+</tr>
+<tr>
+<td>8</td>
+<td>
+<b>fs.fchown(fd, uid, gid, callback)</b><br>异步 fchown().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>9</td>
+<td>
+<b>fs.fchownSync(fd, uid, gid)</b><br>同步 fchown()</td>
+</tr>
+<tr>
+<td>10</td>
+<td>
+<b>fs.lchown(path, uid, gid, callback)</b><br>异步 lchown().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>11</td>
+<td>
+<b>fs.lchownSync(path, uid, gid)</b><br>同步 lchown()</td>
+</tr>
+<tr>
+<td>12</td>
+<td>
+<b>fs.chmod(path, mode, callback)</b><br>异步 chmod().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>13</td>
+<td>
+<b>fs.chmodSync(path, mode)</b><br>同步 chmod().</td>
+</tr>
+<tr>
+<td>14</td>
+<td>
+<b>fs.fchmod(fd, mode, callback)</b><br>异步 fchmod().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>15</td>
+<td>
+<b>fs.fchmodSync(fd, mode)</b><br>同步 fchmod().</td>
+</tr>
+<tr>
+<td>16</td>
+<td>
+<b>fs.lchmod(path, mode, callback)</b><br>异步 lchmod().回调函数没有参数，但可能抛出异常。Only available on Mac OS X.</td>
+</tr>
+<tr>
+<td>17</td>
+<td>
+<b>fs.lchmodSync(path, mode)</b><br>同步 lchmod().</td>
+</tr>
+<tr>
+<td>18</td>
+<td>
+<b>fs.stat(path, callback)</b><br>异步 stat(). 回调函数有两个参数 err, stats，stats 是 fs.Stats 对象。</td>
+</tr>
+<tr>
+<td>19</td>
+<td>
+<b>fs.lstat(path, callback)</b><br>异步 lstat(). 回调函数有两个参数 err, stats，stats 是 fs.Stats 对象。 </td>
+</tr>
+<tr>
+<td>20</td>
+<td>
+<b>fs.fstat(fd, callback)</b><br>异步 fstat(). 回调函数有两个参数 err, stats，stats 是 fs.Stats 对象。 </td>
+</tr>
+<tr>
+<td>21</td>
+<td>
+<b>fs.statSync(path)</b><br>同步 stat(). 返回 fs.Stats 的实例。</td>
+</tr>
+<tr>
+<td>22</td>
+<td>
+<b>fs.lstatSync(path)</b><br>同步 lstat(). 返回 fs.Stats 的实例。</td>
+</tr>
+<tr>
+<td>23</td>
+<td>
+<b>fs.fstatSync(fd)</b><br>同步 fstat(). 返回 fs.Stats 的实例。</td>
+</tr>
+<tr>
+<td>24</td>
+<td>
+<b>fs.link(srcpath, dstpath, callback)</b><br>异步 link().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>25</td>
+<td>
+<b>fs.linkSync(srcpath, dstpath)</b><br>同步 link().</td>
+</tr>
+<tr>
+<td>26</td>
+<td>
+<b>fs.symlink(srcpath, dstpath[, type], callback)</b><br>异步 symlink().回调函数没有参数，但可能抛出异常。 type 参数可以设置为 'dir', 'file', 或 'junction' (默认为 'file') 。</td>
+</tr>
+<tr>
+<td>27</td>
+<td>
+<b>fs.symlinkSync(srcpath, dstpath[, type])</b><br>同步 symlink().</td>
+</tr>
+<tr>
+<td>28</td>
+<td>
+<b>fs.readlink(path, callback)</b><br>异步 readlink(). 回调函数有两个参数 err, linkString。</td>
+</tr>
+<tr>
+<td>29</td>
+<td>
+<b>fs.realpath(path[, cache], callback)</b><br>异步 realpath(). 回调函数有两个参数 err, resolvedPath。</td>
+</tr>
+<tr>
+<td>30</td>
+<td>
+<b>fs.realpathSync(path[, cache])</b><br>同步 realpath()。返回绝对路径。</td>
+</tr>
+<tr>
+<td>31</td>
+<td>
+<b>fs.unlink(path, callback)</b><br>异步 unlink().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>32</td>
+<td>
+<b>fs.unlinkSync(path)</b><br>同步 unlink().</td>
+</tr>
+<tr>
+<td>33</td>
+<td>
+<b>fs.rmdir(path, callback)</b><br>异步 rmdir().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>34</td>
+<td>
+<b>fs.rmdirSync(path)</b><br>同步 rmdir().</td>
+</tr>
+<tr>
+<td>35</td>
+<td>
+<b>fs.mkdir(path[, mode], callback)</b><br>S异步 mkdir(2).回调函数没有参数，但可能抛出异常。 mode defaults to 0777.</td>
+</tr>
+<tr>
+<td>36</td>
+<td>
+<b>fs.mkdirSync(path[, mode])</b><br>同步 mkdir().</td>
+</tr>
+<tr>
+<td>37</td>
+<td>
+<b>fs.readdir(path, callback)</b><br>异步 readdir(3). 读取目录的内容。</td>
+</tr>
+<tr>
+<td>38</td>
+<td>
+<b>fs.readdirSync(path)</b><br>同步 readdir().返回文件数组列表。</td>
+</tr>
+<tr>
+<td>39</td>
+<td>
+<b>fs.close(fd, callback)</b><br>异步 close().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>40</td>
+<td>
+<b>fs.closeSync(fd)</b><br>同步 close().</td>
+</tr>
+<tr>
+<td>41</td>
+<td>
+<b>fs.open(path, flags[, mode], callback)</b><br>异步打开文件。</td>
+</tr>
+<tr>
+<td>42</td>
+<td>
+<b>fs.openSync(path, flags[, mode])</b><br>同步 version of fs.open().</td>
+</tr>
+<tr>
+<td>43</td>
+<td>
+<b>fs.utimes(path, atime, mtime, callback)</b><br> </td>
+</tr>
+<tr>
+<td>44</td>
+<td>
+<b>fs.utimesSync(path, atime, mtime)</b><br>修改文件时间戳，文件通过指定的文件路径。</td>
+</tr>
+<tr>
+<td>45</td>
+<td>
+<b>fs.futimes(fd, atime, mtime, callback)</b><br> </td>
+</tr>
+<tr>
+<td>46</td>
+<td>
+<b>fs.futimesSync(fd, atime, mtime)</b><br>修改文件时间戳，通过文件描述符指定。</td>
+</tr>
+<tr>
+<td>47</td>
+<td>
+<b>fs.fsync(fd, callback)</b><br>异步 fsync.回调函数没有参数，但可能抛出异常。</td>
+</tr>
+<tr>
+<td>48</td>
+<td>
+<b>fs.fsyncSync(fd)</b><br>同步 fsync.</td>
+</tr>
+<tr>
+<td>49</td>
+<td>
+<b>fs.write(fd, buffer, offset, length[, position], callback)</b><br>将缓冲区内容写入到通过文件描述符指定的文件。</td>
+</tr>
+<tr>
+<td>50</td>
+<td>
+<b>fs.write(fd, data[, position[, encoding]], callback)</b><br>通过文件描述符 fd 写入文件内容。</td>
+</tr>
+<tr>
+<td>51</td>
+<td>
+<b>fs.writeSync(fd, buffer, offset, length[, position])</b><br>同步版的 fs.write()。</td>
+</tr>
+<tr>
+<td>52</td>
+<td>
+<b>fs.writeSync(fd, data[, position[, encoding]])</b><br>同步版的 fs.write().</td>
+</tr>
+<tr>
+<td>53</td>
+<td>
+<b>fs.read(fd, buffer, offset, length, position, callback)</b><br>通过文件描述符 fd 读取文件内容。</td>
+</tr>
+<tr>
+<td>54</td>
+<td>
+<b>fs.readSync(fd, buffer, offset, length, position)</b><br>同步版的 fs.read.</td>
+</tr>
+<tr>
+<td>55</td>
+<td>
+<b>fs.readFile(filename[, options], callback)</b><br>异步读取文件内容。</td>
+</tr>
+<tr>
+<td>56</td>
+<td>
+<b>fs.readFileSync(filename[, options])</b><br fs.readfile.>
+</td>
+</tr>
+<tr>
+<td>57</td>
+<td>
+<b>fs.writeFile(filename, data[, options], callback)</b><br>异步写入文件内容。</td>
+</tr>
+<tr>
+<td>58</td>
+<td>
+<b>fs.writeFileSync(filename, data[, options])</b><br>同步版的 fs.writeFile。</td>
+</tr>
+<tr>
+<td>59</td>
+<td>
+<b>fs.appendFile(filename, data[, options], callback)</b><br>异步追加文件内容。</td>
+</tr>
+<tr>
+<td>60</td>
+<td>
+<b>fs.appendFileSync(filename, data[, options])</b><br>The 同步 version of fs.appendFile.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>
+<b>fs.watchFile(filename[, options], listener)</b><br>查看文件的修改。</td>
+</tr>
+<tr>
+<td>62</td>
+<td>
+<b>fs.unwatchFile(filename[, listener])</b><br>停止查看 filename 的修改。 </td>
+</tr>
+<tr>
+<td>63</td>
+<td>
+<b>fs.watch(filename[, options][, listener])</b><br>查看 filename 的修改，filename 可以是文件或目录。返回 fs.FSWatcher 对象。</td>
+</tr>
+<tr>
+<td>64</td>
+<td>
+<b>fs.exists(path, callback)</b><br>检测给定的路径是否存在。</td>
+</tr>
+<tr>
+<td>65</td>
+<td>
+<b>fs.existsSync(path)</b><br>同步版的 fs.exists.</td>
+</tr>
+<tr>
+<td>66</td>
+<td>
+<b>fs.access(path[, mode], callback)</b><br>测试指定路径用户权限。</td>
+</tr>
+<tr>
+<td>67</td>
+<td>
+<b>fs.accessSync(path[, mode])</b><br>同步版的 fs.access。</td>
+</tr>
+<tr>
+<td>68</td>
+<td>
+<b>fs.createReadStream(path[, options])</b><br>返回ReadStream 对象。</td>
+</tr>
+<tr>
+<td>69</td>
+<td>
+<b>fs.createWriteStream(path[, options])</b><br>返回 WriteStream 对象。</td>
+</tr>
+<tr>
+<td>70</td>
+<td>
+<b>fs.symlink(srcpath, dstpath[, type], callback)</b><br>异步 symlink().回调函数没有参数，但可能抛出异常。</td>
+</tr>
+</tbody></table>
+<p>更多内容，请查看官网文件模块描述：<a href="https://nodejs.org/api/fs.html#fs_fs_rename_oldpath_newpath_callback" target="_blank">File System</a>。</p> 	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>

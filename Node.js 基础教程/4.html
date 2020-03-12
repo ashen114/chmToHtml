@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js REPL(交互式解释器)</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js REPL(交互式解释器)</h1>
+	<hr>
+		  <p>Node.js REPL(Read Eval Print Loop:交互式解释器) 表示一个电脑的环境，类似 Window 系统的终端或 Unix/Linux shell，我们可以在终端中输入命令，并接收系统的响应。</p> <p>Node 自带了交互式解释器，可以执行以下任务：</p> <ul class="list-group">
+<li class="list-group-item"><p><b>读取</b> - 读取用户输入，解析输入了Javascript 数据结构并存储在内存中。</p></li> <li class="list-group-item"><p><b>执行</b> - 执行输入的数据结构</p></li> <li class="list-group-item"><p><b>打印</b> - 输出结果</p></li> <li class="list-group-item"><p><b>循环</b> - 循环操作以上步骤直到用户两次按下 <b>ctrl-c</b> 按钮退出。</p></li> </ul>
+<p>Node 的交互式解释器可以很好的调试 Javascript 代码。</p> <p>开始学习 REPL</p> <p>我们可以输入以下命令来启动 Node 的终端：</p> <pre>
+$ node
+&gt; 
+</pre> <p>这时我们就可以在 &gt; 后输入简单的表达式，并按下回车键来计算结果。</p> <h3>简单的表达式运算</h3> <p>接下来让我们在 Node.js REPL 的命令行窗口中执行简单的数学运算：</p> <pre>
+$ node
+&gt; 1 +4
+5
+&gt; 5 / 2
+2.5
+&gt; 3 * 6
+18
+&gt; 4 - 1
+3
+&gt; 1 + ( 2 * 3 ) - 4
+3
+&gt;
+</pre> <h3>使用变量</h3> <p>你可以将数据存储在变量中，并在你需要的使用它。</p> <p>变量声明需要使用 <b>var</b> 关键字，如果没有使用 var 关键字变量会直接打印出来。</p> <p>使用 <b>var</b> 关键字的变量可以使用 console.log() 来输出变量。</p> <pre>
+$ node
+&gt; x = 10
+10
+&gt; var y = 10
+undefined
+&gt; x + y
+20
+&gt; console.log("Hello World")
+Hello Workd
+undefined
+&gt; console.log("www.shouce.ren")
+www.shouce.ren
+undefined
+</pre> <h3>多行表达式</h3> <p> Node REPL 支持输入多行表达式，这就有点类似 JavaScript。接下来让我们来执行一个 do-while 循环：</p>  <pre>
+$ node
+&gt; var x = 0
+undefined
+&gt; do {
+... x++;
+... console.log("x: " + x);
+... } while ( x &lt; 5 );
+x: 1
+x: 2
+x: 3
+x: 4
+x: 5
+undefined
+&gt;
+</pre> <p> </p>
+<p><b>...</b> 三个点的符号是系统自动生成的，你回车换行后即可。Node 会自动检测是否为连续的表达式。</p> <h3>下划线(_)变量</h3> <p>你可以使用下划线(_)获取表达式的运算结果：</p> <pre>
+$ node
+&gt; var x = 10
+undefined
+&gt; var y = 20
+undefined
+&gt; x + y
+30
+&gt; var sum = _
+undefined
+&gt; console.log(sum)
+30
+undefined
+&gt;
+</pre> <hr>
+<h2>REPL 命令</h2> <ul class="list-group">
+<li class="list-group-item"><p><b>ctrl + c</b> - 退出当前终端。</p></li> <li class="list-group-item"><p><b>ctrl + c 按下两次</b> - 退出 Node REPL。</p></li> <li class="list-group-item"><p><b>ctrl + d</b> - 退出 Node REPL.</p></li> <li class="list-group-item"><p><b>向上/向下 键</b> - 查看输入的历史命令</p></li> <li class="list-group-item"><p><b>tab 键</b> - 列出当前命令</p></li> <li class="list-group-item"><p><b>.help</b> - 列出使用命令</p></li> <li class="list-group-item"><p><b>.break</b> - 退出多行表达式</p></li> <li class="list-group-item"><p><b>.clear</b> - 退出多行表达式</p></li> <li class="list-group-item"><p><b>.save <i>filename</i></b> - 保存当前的 Node REPL 会话到指定文件</p></li> <li class="list-group-item"><p><b>.load <i>filename</i></b> - 载入当前 Node REPL 会话的文件内容。</p></li> </ul>
+<hr>
+<h2>停止 REPL</h2> <p>前面我们已经提到按下两次 <b>ctrl + c</b> 建就能退出 REPL:</p> <pre>
+$ node
+&gt;
+(^C again to quit)
+&gt;
+</pre> <hr>
+<h2>Gif 实例演示</h2> <p> 接下来我们通过 Gif 图为大家演示实例操作：</p> <img src="../image/56134d8a13378.gif">
+	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>

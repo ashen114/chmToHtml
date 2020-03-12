@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js 事件循环</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js 事件循环</h1>
+	<hr>
+		  <p>Node.js 是单进程单线程应用程序，但是通过事件和回调支持并发，所以性能非常高。</p> <p>Node.js 的每一个 API 都是异步的，并作为一个独立线程运行，使用异步函数调用，并处理并发。</p> <p>Node.js 基本上所有的事件机制都是用设计模式中观察者模式实现。</p> <p>Node.js 单线程类似进入一个while(true)的事件循环，直到没有事件观察者退出，每个异步事件都生成一个事件观察者，如果有事件发生就调用该回调函数.</p> <hr>
+<h2>事件驱动程序</h2> <p> Node.js 使用事件驱动模型，当web server接收到请求，就把它关闭然后进行处理，然后去服务下一个web请求。 </p>
+<p>当这个请求完成，它被放回处理队列，当到达队列开头，这个结果被返回给用户。 </p>
+<p>这个模型非常高效可扩展性非常强，因为webserver一直接受请求而不等待任何读写操作。（这也被称之为非阻塞式IO或者事件驱动IO） </p>在事件驱动模型中，会生成一个主循环来监听事件，当检测到事件时触发回调函数。 <img src="../image/56134d97abfeb.jpg"><p> 整个事件驱动的流程就是这么实现的，非常简洁。有点类似于观察者模式，事件相当于一个主题(Subject)，而所有注册到这个事件上的处理函数相当于观察者(Observer)。 </p> <p> Node.js 有多个内置的事件，我们可以通过引入 events 模块，并通过实例化 EventEmitter 类来绑定和监听事件，如下实例：</p> <pre>
+// 引入 events 模块
+var events = require('events');
+// 创建 eventEmitter 对象
+var eventEmitter = new events.EventEmitter();
+</pre> <p>以下程序绑定事件处理程序：</p> <pre>
+// 绑定事件及事件的处理程序
+eventEmitter.on('eventName', eventHandler);
+</pre> <p>我们可以通过程序触发事件：</p> <pre>
+// 触发事件
+eventEmitter.emit('eventName');</pre> <h3>实例</h3> 创建 main.js 文件，代码如下所示： <pre>
+// 引入 events 模块
+var events = require('events');
+// 创建 eventEmitter 对象
+var eventEmitter = new events.EventEmitter();
+
+// 创建事件处理程序
+var connectHandler = function connected() {
+   console.log('连接成功。');
+  
+   // 触发 data_received 事件 
+   eventEmitter.emit('data_received');
+}
+
+// 绑定 connection 事件处理程序
+eventEmitter.on('connection', connectHandler);
+ 
+// 使用匿名函数绑定 data_received 事件
+eventEmitter.on('data_received', function(){
+   console.log('数据接收成功。');
+});
+
+// 触发 connection 事件 
+eventEmitter.emit('connection');
+
+console.log("程序执行完毕。");
+</pre> <p>接下来让我们执行以上代码：</p> <pre>
+$ node main.js
+连接成功。
+数据接收成功。
+程序执行完毕。
+</pre> <hr>
+<h2>Node 应用程序是如何工作的？</h2> <p> 在 Node 应用程序中，执行异步操作的函数将回调函数作为最后一个参数， 回调函数接收错误对象作为第一个参数。 </p> <p>接下来让我们来重新看下前面的实例，创建一个 input.txt ,文件内容如下：</p> <pre>
+手册网官网地址：www.shouce.ren
+</pre> <p>创建 main.js 文件，代码如下：</p> <pre>
+var fs = require("fs");
+
+fs.readFile('input.txt', function (err, data) {
+   if (err){
+      console.log(err.stack);
+      return;
+   }
+   console.log(data.toString());
+});
+console.log("程序执行完毕");</pre> <p> 以上程序中 fs.readFile() 是异步函数用于读取文件。 如果在读取文件过程中发生错误，错误 err 对象就会输出错误信息。</p> <p>如果没发生错误，readFile 跳过 err 对象的输出，文件内容就通过回调函数输出。</p> <p>执行以上代码，执行结果如下：</p> <pre>
+程序执行完毕
+手册网官网地址：www.shouce.ren
+
+</pre> <p>接下来我们删除 input.txt 文件，执行结果如下所示：</p> <pre>
+程序执行完毕
+Error: ENOENT, open 'input.txt'
+</pre> <p>因为文件 input.txt 不存在，所以输出了错误信息。</p> 	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>

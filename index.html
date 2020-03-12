@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        display: flex;
+        flex-direction: row;
+      }
+      #menu {
+        width: 20vw;
+        height: 100vh;
+        background-color: beige;
+      }
+      #content {
+        width: 80vw;
+        height: 100vh;
+        background-color: blanchedalmond;
+      }
+      #iframe {
+        width: 80vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="menu">
+      <div id="menu-title"></div>
+      <div id="menu-content">
+        <!-- <a>1.html</a>
+        <a>2.html</a> -->
+      </div>
+    </div>
+    <div id="content">
+      <iframe
+        id="iframe"
+        frameborder="0"
+        src="./Node.js 基础教程/0.html"
+      ></iframe>
+    </div>
+
+    <script>
+      //   var bookList = Array.from({ length: 27 }, (v, i) => i);
+
+      var bookList = [
+        { name: "Node.js教程", id: 0 },
+        { name: "Node.js模块系统", id: 2 },
+        { name: "Node.js函数", id: 3 },
+        { name: "Node.js安装配置", id: 1 },
+        { name: "Node.js路由", id: 4 },
+        { name: "Node.js全局对象", id: 5 },
+        { name: "Node.js常用工具", id: 6 },
+        { name: "Node.js文件系统", id: 7 },
+        { name: "Node.jsGET/POST请求", id: 8 },
+        { name: "Node.js工具模块", id: 9 },
+        { name: "Node.jsPath模块", id: 11 },
+        { name: "Node.jsOS模块", id: 10 },
+        { name: "Node.js创建第一个应用", id: 12 },
+        { name: "Node.jsNet模块", id: 13 },
+        { name: "Node.jsDomain模块", id: 15 },
+        { name: "Node.jsDNS模块", id: 14 },
+        { name: "Node.jsExpress框架", id: 16 },
+        { name: "Node.jsRESTfulAPI", id: 17 },
+        { name: "Node.js多进程", id: 18 },
+        { name: "Node.jsJXcore打包", id: 19 },
+        { name: "Node.jsWeb模块", id: 20 },
+        { name: "NPM使用介绍", id: 21 },
+        { name: "Node.jsREPL(交互式解释器)", id: 22 },
+        { name: "Node.js回调函数", id: 23 },
+        { name: "Node.js事件循环", id: 24 },
+        { name: "Node.jsEventEmitter", id: 25 },
+        { name: "Node.jsBuffer(缓冲区)", id: 26 },
+        { name: "Node.jsStream(流)", id: 27 }
+      ].sort((a, b) => a.id - b.id);
+
+      window.onload = function() {
+        var title = document.getElementById("menu-title");
+        var content = document.getElementById("menu-content");
+        var iframe = document.getElementById("iframe");
+
+        // 当前显示内容的标题
+        // var iframe_title = iframe.contentWindow.document
+        //   .getElementsByTagName("div")[0]
+        //   .getElementsByTagName("h1")[0].innerText;
+
+        // title.innerText = iframe_title;
+
+        // 菜单栏 - 创建菜单栏列表
+        for (var i = 0; i < 27; i++) {
+          var _div = document.createElement("div");
+          _div.innerText =
+            bookList[i] && bookList[i].name ? bookList[i].name : "null";
+          content.appendChild(_div);
+        }
+
+        // iframe - src的变更
+        if (content && content.children) {
+          for (var i = 0; i < content.children.length; i++) {
+            (function(i) {
+              content.children[i].onclick = function() {
+                iframe.src = "./Node.js 基础教程/" + i + ".html";
+              };
+            })(i);
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

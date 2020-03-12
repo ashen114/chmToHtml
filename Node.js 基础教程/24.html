@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>Node.js RESTful API</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div class="m-bg">
+	<h1>Node.js RESTful API</h1>
+	<hr>
+		<h2>什么是 REST？</h2><p>RREST即表述性状态传递（英文：Representational State Transfer，简称REST）是Roy Fielding博士在2000年他的博士论文中提出来的一种软件架构风格。</p><p>表述性状态转移是一组架构约束条件和原则。满足这些约束条件和原则的应用程序或设计就是RESTful。需要注意的是，REST是设计风格而不是标准。REST通常基于使用HTTP，URI，和XML（标准通用标记语言下的一个子集）以及HTML（标准通用标记语言下的一个应用）这些现有的广泛流行的协议和标准。REST 通常使用 JSON 数据格式。</p><h3>HTTP 方法</h3><p>以下为 REST 基本架构的四个方法：</p><ul class="list-group"><li class="list-group-item"><p><strong>GET</strong> - 用于获取数据。</p></li><li class="list-group-item"><p><strong>PUT</strong> - 用于添加数据。</p></li><li class="list-group-item"><p><strong>DELETE</strong> - 用于删除数据。</p></li><li class="list-group-item"><p><strong>POST</strong> - 用于更新或添加数据。</p></li></ul><hr/><h2>RESTful Web Services</h2><p>Web service是一个平台独立的，低耦合的，自包含的、基于可编程的web的应用程序，可使用开放的XML（标准通用标记语言下的一个子集）标准来描述、发布、发现、协调和配置这些应用程序，用于开发分布式的互操作的应用程序。</p><p>基于 REST 架构的 Web Services 即是 RESTful。</p><p>由于轻量级以及通过 HTTP 直接传输数据的特性，Web 服务的 RESTful 方法已经成为最常见的替代方法。可以使用各种语言（比如 Java 程序、Perl、Ruby、Python、PHP 和 Javascript[包括 Ajax]）实现客户端。</p><p>RESTful Web 服务通常可以通过自动客户端或代表用户的应用程序访问。但是，这种服务的简便性让用户能够与之直接交互，使用它们的 Web 浏览器构建一个 GET URL 并读取返回的内容。</p><p>更多介绍，可以查看：RESTful 架构详解</p><hr/><h2>创建 RESTful</h2><p>首先，创建一个 json 数据资源文件 users.json，内容如下：</p><pre>{
+&nbsp;&nbsp;&nbsp;&quot;user1&quot;&nbsp;:&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;name&quot;&nbsp;:&nbsp;&quot;mahesh&quot;,
+	&nbsp;&nbsp;&quot;password&quot;&nbsp;:&nbsp;&quot;password1&quot;,
+	&nbsp;&nbsp;&quot;profession&quot;&nbsp;:&nbsp;&quot;teacher&quot;,
+	&nbsp;&nbsp;&quot;id&quot;:&nbsp;1
+&nbsp;&nbsp;&nbsp;},
+&nbsp;&nbsp;&nbsp;&quot;user2&quot;&nbsp;:&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;name&quot;&nbsp;:&nbsp;&quot;suresh&quot;,
+	&nbsp;&nbsp;&quot;password&quot;&nbsp;:&nbsp;&quot;password2&quot;,
+	&nbsp;&nbsp;&quot;profession&quot;&nbsp;:&nbsp;&quot;librarian&quot;,
+	&nbsp;&nbsp;&quot;id&quot;:&nbsp;2
+&nbsp;&nbsp;&nbsp;},
+&nbsp;&nbsp;&nbsp;&quot;user3&quot;&nbsp;:&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;name&quot;&nbsp;:&nbsp;&quot;ramesh&quot;,
+	&nbsp;&nbsp;&quot;password&quot;&nbsp;:&nbsp;&quot;password3&quot;,
+	&nbsp;&nbsp;&quot;profession&quot;&nbsp;:&nbsp;&quot;clerk&quot;,
+	&nbsp;&nbsp;&quot;id&quot;:&nbsp;3
+&nbsp;&nbsp;&nbsp;}
+}</pre><p></p><p>基于以上数据，我们创建以下 RESTful API：</p><table class="reference"><tbody><tr class="firstRow"><th>序号</th><th>URI</th><th>HTTP 方法</th><th>发送内容</th><th>结果</th></tr><tr><td>1</td><td>listUsers</td><td>GET</td><td>空</td><td>显示所有用户列表</td></tr><tr><td>2</td><td>addUser</td><td>POST</td><td>JSON 字符串</td><td>添加新用户</td></tr><tr><td>3</td><td>deleteUser</td><td>DELETE</td><td>JSON 字符串</td><td>删除用户</td></tr><tr><td>4</td><td>:id</td><td>GET</td><td>空</td><td>显示用户详细信息</td></tr></tbody></table><h3>获取用户列表：</h3><p>以下代码，我们创建了 RESTful API <strong>listUsers</strong>，用于读取用户的信息列表， server.js 文件代码如下所示：</p><pre>var&nbsp;express&nbsp;=&nbsp;require(&#39;express&#39;);
+var&nbsp;app&nbsp;=&nbsp;express();
+var&nbsp;fs&nbsp;=&nbsp;require(&quot;fs&quot;);
+
+app.get(&#39;/listUsers&#39;,&nbsp;function&nbsp;(req,&nbsp;res)&nbsp;{
+&nbsp;&nbsp;&nbsp;fs.readFile(&nbsp;__dirname&nbsp;+&nbsp;&quot;/&quot;&nbsp;+&nbsp;&quot;users.json&quot;,&nbsp;&#39;utf8&#39;,&nbsp;function&nbsp;(err,&nbsp;data)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log(&nbsp;data&nbsp;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res.end(&nbsp;data&nbsp;);
+&nbsp;&nbsp;&nbsp;});
+})
+
+var&nbsp;server&nbsp;=&nbsp;app.listen(8081,&nbsp;function&nbsp;()&nbsp;{
+
+&nbsp;&nbsp;var&nbsp;host&nbsp;=&nbsp;server.address().address
+&nbsp;&nbsp;var&nbsp;port&nbsp;=&nbsp;server.address().port
+
+&nbsp;&nbsp;console.log(&quot;应用实例，访问地址为&nbsp;http://%s:%s&quot;,&nbsp;host,&nbsp;port)
+
+})</pre><p></p><p>接下来执行以下命令：</p><pre>$&nbsp;node&nbsp;server.js&nbsp;
+应用实例，访问地址为&nbsp;http://0.0.0.0:8081</pre><p>在浏览器中访问 http://127.0.0.1:8081/listUsers，结果如下所示：</p><pre>{
+&nbsp;&nbsp;&nbsp;&quot;user1&quot;&nbsp;:&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;name&quot;&nbsp;:&nbsp;&quot;mahesh&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;password&quot;&nbsp;:&nbsp;&quot;password1&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;profession&quot;&nbsp;:&nbsp;&quot;teacher&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;id&quot;:&nbsp;1
+&nbsp;&nbsp;&nbsp;},
+&nbsp;&nbsp;&nbsp;&quot;user2&quot;&nbsp;:&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;name&quot;&nbsp;:&nbsp;&quot;suresh&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;password&quot;&nbsp;:&nbsp;&quot;password2&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;profession&quot;&nbsp;:&nbsp;&quot;librarian&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;id&quot;:&nbsp;2
+&nbsp;&nbsp;&nbsp;},
+&nbsp;&nbsp;&nbsp;&quot;user3&quot;&nbsp;:&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;name&quot;&nbsp;:&nbsp;&quot;ramesh&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;password&quot;&nbsp;:&nbsp;&quot;password3&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;profession&quot;&nbsp;:&nbsp;&quot;clerk&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;id&quot;:&nbsp;3
+&nbsp;&nbsp;&nbsp;}
+}</pre><p></p><h3>添加用户</h3><p>以下代码，我们创建了 RESTful API <strong>addUser</strong>， 用于添加新的用户数据，server.js 文件代码如下所示：</p><pre>var&nbsp;express&nbsp;=&nbsp;require(&#39;express&#39;);
+var&nbsp;app&nbsp;=&nbsp;express();
+var&nbsp;fs&nbsp;=&nbsp;require(&quot;fs&quot;);
+
+//添加的新用户数据
+var&nbsp;user&nbsp;=&nbsp;{
+&nbsp;&nbsp;&nbsp;&quot;user4&quot;&nbsp;:&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;name&quot;&nbsp;:&nbsp;&quot;mohit&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;password&quot;&nbsp;:&nbsp;&quot;password4&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;profession&quot;&nbsp;:&nbsp;&quot;teacher&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;id&quot;:&nbsp;4
+&nbsp;&nbsp;&nbsp;}
+}
+
+app.get(&#39;/addUser&#39;,&nbsp;function&nbsp;(req,&nbsp;res)&nbsp;{
+&nbsp;&nbsp;&nbsp;//&nbsp;读取已存在的数据
+&nbsp;&nbsp;&nbsp;fs.readFile(&nbsp;__dirname&nbsp;+&nbsp;&quot;/&quot;&nbsp;+&nbsp;&quot;users.json&quot;,&nbsp;&#39;utf8&#39;,&nbsp;function&nbsp;(err,&nbsp;data)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;JSON.parse(&nbsp;data&nbsp;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data[&quot;user4&quot;]&nbsp;=&nbsp;user[&quot;user4&quot;];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log(&nbsp;data&nbsp;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res.end(&nbsp;JSON.stringify(data));
+&nbsp;&nbsp;&nbsp;});
+})
+
+var&nbsp;server&nbsp;=&nbsp;app.listen(8081,&nbsp;function&nbsp;()&nbsp;{
+
+&nbsp;&nbsp;var&nbsp;host&nbsp;=&nbsp;server.address().address
+&nbsp;&nbsp;var&nbsp;port&nbsp;=&nbsp;server.address().port
+&nbsp;&nbsp;console.log(&quot;应用实例，访问地址为&nbsp;http://%s:%s&quot;,&nbsp;host,&nbsp;port)
+
+})</pre><p></p><p>接下来执行以下命令：</p><pre>$&nbsp;node&nbsp;server.js&nbsp;
+应用实例，访问地址为&nbsp;http://0.0.0.0:8081</pre><p>在浏览器中访问 http://127.0.0.1:8081/addUsers，结果如下所示：</p><pre>{&nbsp;user1:
+&nbsp;&nbsp;&nbsp;{&nbsp;name:&nbsp;&#39;mahesh&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password:&nbsp;&#39;password1&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profession:&nbsp;&#39;teacher&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id:&nbsp;1&nbsp;},
+&nbsp;&nbsp;user2:
+&nbsp;&nbsp;&nbsp;{&nbsp;name:&nbsp;&#39;suresh&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password:&nbsp;&#39;password2&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profession:&nbsp;&#39;librarian&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id:&nbsp;2&nbsp;},
+&nbsp;&nbsp;user3:
+&nbsp;&nbsp;&nbsp;{&nbsp;name:&nbsp;&#39;ramesh&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password:&nbsp;&#39;password3&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profession:&nbsp;&#39;clerk&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id:&nbsp;3&nbsp;},
+&nbsp;&nbsp;user4:
+&nbsp;&nbsp;&nbsp;{&nbsp;name:&nbsp;&#39;mohit&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password:&nbsp;&#39;password4&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profession:&nbsp;&#39;teacher&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id:&nbsp;4&nbsp;}&nbsp;
+}</pre><p></p><h3>显示用户详情</h3><p>以下代码，我们创建了 RESTful API <strong>:id（用户id）</strong>， 用于读取指定用户的详细信息，server.js 文件代码如下所示：</p><pre>var&nbsp;express&nbsp;=&nbsp;require(&#39;express&#39;);
+var&nbsp;app&nbsp;=&nbsp;express();
+var&nbsp;fs&nbsp;=&nbsp;require(&quot;fs&quot;);
+
+app.get(&#39;/:id&#39;,&nbsp;function&nbsp;(req,&nbsp;res)&nbsp;{
+&nbsp;&nbsp;&nbsp;//&nbsp;首先我们读取已存在的用户
+&nbsp;&nbsp;&nbsp;fs.readFile(&nbsp;__dirname&nbsp;+&nbsp;&quot;/&quot;&nbsp;+&nbsp;&quot;users.json&quot;,&nbsp;&#39;utf8&#39;,&nbsp;function&nbsp;(err,&nbsp;data)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;JSON.parse(&nbsp;data&nbsp;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;user&nbsp;=&nbsp;users[&quot;user&quot;&nbsp;+&nbsp;req.params.id]&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log(&nbsp;user&nbsp;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res.end(&nbsp;JSON.stringify(user));
+&nbsp;&nbsp;&nbsp;});
+})
+
+var&nbsp;server&nbsp;=&nbsp;app.listen(8081,&nbsp;function&nbsp;()&nbsp;{
+
+&nbsp;&nbsp;var&nbsp;host&nbsp;=&nbsp;server.address().address
+&nbsp;&nbsp;var&nbsp;port&nbsp;=&nbsp;server.address().port
+&nbsp;&nbsp;console.log(&quot;应用实例，访问地址为&nbsp;http://%s:%s&quot;,&nbsp;host,&nbsp;port)
+
+})</pre><p></p><p>接下来执行以下命令：</p><pre>$&nbsp;node&nbsp;server.js&nbsp;
+应用实例，访问地址为&nbsp;http://0.0.0.0:8081</pre><p>在浏览器中访问 http://127.0.0.1:8081/2，结果如下所示：</p><pre>{
+&nbsp;&nbsp;&nbsp;&quot;name&quot;:&quot;suresh&quot;,
+&nbsp;&nbsp;&nbsp;&quot;password&quot;:&quot;password2&quot;,
+&nbsp;&nbsp;&nbsp;&quot;profession&quot;:&quot;librarian&quot;,
+&nbsp;&nbsp;&nbsp;&quot;id&quot;:2
+}</pre><p></p><h3>删除用户</h3><p>以下代码，我们创建了 RESTful API <strong>deleteUser</strong>， 用于删除指定用户的详细信息，以下实例中，用户 id 为 2，server.js 文件代码如下所示：</p><pre>var&nbsp;express&nbsp;=&nbsp;require(&#39;express&#39;);
+var&nbsp;app&nbsp;=&nbsp;express();
+var&nbsp;fs&nbsp;=&nbsp;require(&quot;fs&quot;);
+
+var&nbsp;id&nbsp;=&nbsp;2;
+
+app.get(&#39;/deleteUser&#39;,&nbsp;function&nbsp;(req,&nbsp;res)&nbsp;{
+
+&nbsp;&nbsp;&nbsp;//&nbsp;First&nbsp;read&nbsp;existing&nbsp;users.
+&nbsp;&nbsp;&nbsp;fs.readFile(&nbsp;__dirname&nbsp;+&nbsp;&quot;/&quot;&nbsp;+&nbsp;&quot;users.json&quot;,&nbsp;&#39;utf8&#39;,&nbsp;function&nbsp;(err,&nbsp;data)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;JSON.parse(&nbsp;data&nbsp;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delete&nbsp;data[&quot;user&quot;&nbsp;+&nbsp;2];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log(&nbsp;data&nbsp;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res.end(&nbsp;JSON.stringify(data));
+&nbsp;&nbsp;&nbsp;});
+})
+
+var&nbsp;server&nbsp;=&nbsp;app.listen(8081,&nbsp;function&nbsp;()&nbsp;{
+
+&nbsp;&nbsp;var&nbsp;host&nbsp;=&nbsp;server.address().address
+&nbsp;&nbsp;var&nbsp;port&nbsp;=&nbsp;server.address().port
+&nbsp;&nbsp;console.log(&quot;应用实例，访问地址为&nbsp;http://%s:%s&quot;,&nbsp;host,&nbsp;port)
+
+})</pre><p></p><p>接下来执行以下命令：</p><pre>$&nbsp;node&nbsp;server.js&nbsp;
+应用实例，访问地址为&nbsp;http://0.0.0.0:8081</pre><p>在浏览器中访问 http://127.0.0.1:8081/deleteUser，结果如下所示：</p><pre>{&nbsp;user1:
+&nbsp;&nbsp;&nbsp;{&nbsp;name:&nbsp;&#39;mahesh&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password:&nbsp;&#39;password1&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profession:&nbsp;&#39;teacher&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id:&nbsp;1&nbsp;},
+&nbsp;&nbsp;user3:
+&nbsp;&nbsp;&nbsp;{&nbsp;name:&nbsp;&#39;ramesh&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password:&nbsp;&#39;password3&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profession:&nbsp;&#39;clerk&#39;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id:&nbsp;3&nbsp;}&nbsp;
+}</pre><p></p>	<div class="text-center padding-10 margin-t-5">
+					</div>
+</div>
+<div class="m-bg text-center margin-t-10">
+	<p>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/about">关于我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/contact">联系我们</a>
+		<a class="btn btn-xs btn-default" href="http://www.shouce.ren/main/lyb">留言板</a>
+	</p>
+	<p><a class="btn btn-xs btn-default" href="http://www.shouce.ren">手册网</a></p>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+});
+</script>
+</body>
+</html>
